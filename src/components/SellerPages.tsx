@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { currentAccount } from '../lib/identity';
-import { fetchAddresses, fetchBuybacks, fetchListings, request } from '../lib/marketplace';
+import { fetchAddresses, fetchBuybacks, request } from '../lib/marketplace';
 import type { Address } from '../lib/marketplace';
 import { formatVnd } from '../lib/products';
 import { MarketplaceLayout, SessionGate, TrustStrip } from './MarketplaceLayout';
-import { Button, EmptyState, Icon, Input, ProductMedia } from './ui';
+import { Button, Icon, Input } from './ui';
 import { ListingForm } from './ListingForm';
 
 export function SellPage() { return <MarketplaceLayout eyebrow="Kênh người bán CameraHub" title="Trao thiết bị. Tiếp nối đam mê." description="Thông tin rõ ràng giúp chiếc máy của bạn tìm đúng người đồng hành."><SessionGate><ListingForm /></SessionGate><TrustStrip /></MarketplaceLayout>; }
@@ -36,11 +35,4 @@ export function AddressBook() {
   return <div className="profile-columns"><section className="surface-card"><h2>Sổ địa chỉ nhận thiết bị</h2>{addresses.isPending && <p>Đang tải địa chỉ…</p>}{addresses.isError && <p className="account-error">Chưa tải được địa chỉ. <button onClick={() => void addresses.refetch()}>Thử lại</button></p>}{addresses.data?.map(item => <div className="address-card" key={item.id}><Icon name="location_on" /><div><strong>{item.recipientName} {item.isDefault && <span className="order-status">Mặc định</span>}</strong><p>{item.phone}</p><p>{item.streetAddress}, {item.province}</p></div></div>)}{addresses.isSuccess && !addresses.data.length && <p>Bạn chưa lưu địa chỉ nhận thiết bị.</p>}</section><form className="surface-card account-form" onSubmit={submit}><h2>Thêm địa chỉ mới</h2><Input name="recipientName" label="Họ tên người nhận" required maxLength={160} autoComplete="name" /><Input name="phone" label="Số điện thoại" type="tel" required pattern="[+0-9 ()-]{8,20}" autoComplete="tel" /><Input name="province" label="Tỉnh / Thành phố" required maxLength={160} autoComplete="address-level1" /><Input name="streetAddress" label="Địa chỉ đầy đủ" required maxLength={500} autoComplete="street-address" /><label className="terms-check"><input name="isDefault" type="checkbox" /><span>Đặt làm địa chỉ mặc định</span></label>{error && <p role="alert" className="account-error">{error}</p>}<Button disabled={busy}>{busy?'Đang lưu…':'Lưu địa chỉ'}<Icon name="check" /></Button></form></div>;
 }
 
-export function MyListings() {
-  const session = useQuery({ queryKey: ['session'], queryFn: currentAccount });
-  const listings = useQuery({ queryKey: ['listings',session.data?.id], queryFn: fetchListings });
-  const [status,setStatus] = useState('ALL');
-  const labels: Record<string,string> = { PUBLISHED:'Đang đăng bán', PENDING_REVIEW:'Chờ duyệt', NEEDS_REVISION:'Cần bổ sung', DRAFT:'Bản nháp', RESERVED:'Đã được đặt mua', SOLD:'Đã bán', REJECTED:'Bị từ chối', HIDDEN:'Đã ẩn' };
-  const items = (listings.data ?? []).filter(item => status === 'ALL' || item.listingStatus === status);
-  return <><div className="card-title-row"><h2>Kho thiết bị & Tin đăng bán</h2><Link className="button button-primary" to="/dang-ban"><Icon name="add" />Đăng tin thiết bị</Link></div><nav className="market-tabs" aria-label="Trạng thái tin đăng">{[['ALL','Tất cả'],['PUBLISHED','Đang bán'],['PENDING_REVIEW','Chờ duyệt'],['RESERVED','Đã đặt mua'],['SOLD','Đã bán']].map(([key,label]) => <button key={key} className={status===key?'active':''} onClick={() => setStatus(key)}>{label}</button>)}</nav>{listings.isPending && <p>Đang tải thiết bị…</p>}{listings.isError && <EmptyState icon="wifi_off" title="Chưa tải được tin đăng" description="Vui lòng thử lại." action={<Button onClick={() => void listings.refetch()}>Thử lại</Button>} />}{listings.isSuccess && !items.length && <EmptyState icon="photo_camera" title="Chưa có thiết bị ở trạng thái này" description="Tin đăng của bạn sẽ được hiển thị tại đây." action={<Link className="button button-primary" to="/dang-ban">Đăng tin mới</Link>} />}{items.map(item => <article className="surface-card seller-listing" key={item.id}><div className="seller-listing-image"><ProductMedia product={item} /></div><div><span className="order-status">{labels[item.listingStatus ?? ''] ?? item.listingStatus}</span><h3>{item.title}</h3><p>{item.conditionNotes}</p><small>{item.brand} · {item.modelName}</small></div><div><strong>{formatVnd(item.priceVnd)}</strong>{item.listingStatus === 'PUBLISHED' && <Link className="text-link" to={`/may-anh/${item.id}`}>Xem tin đăng<Icon name="arrow_forward" /></Link>}</div></article>)}</>;
-}
+export { MyListings } from './MyListings';

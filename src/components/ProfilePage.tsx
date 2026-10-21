@@ -1,26 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { currentAccount, logout } from '../lib/identity';
-import { fetchListings, fetchOrders, request } from '../lib/marketplace';
+import { useQuery } from '@tanstack/react-query';
+import { currentAccount } from '../lib/identity';
+import { request } from '../lib/marketplace';
 import type { Product } from '../lib/products';
 import { formatVnd } from '../lib/products';
-import { MarketplaceLayout, SessionGate, TrustStrip } from './MarketplaceLayout';
-import { AddressBook, MyListings } from './SellerPages';
-import { Button, EmptyState, Icon } from './ui';
+import { MarketplaceLayout, SessionGate } from './MarketplaceLayout';
+import { ProfileContent } from './ProfileContent';
+import { Button, EmptyState } from './ui';
 
-export function ProfilePage() { return <MarketplaceLayout eyebrow="Trung tâm tài khoản" title="Hồ sơ tài khoản & Quản lý thiết bị" description="Quản lý thông tin cá nhân, kho thiết bị và các giao dịch của bạn."><SessionGate><ProfileContent /></SessionGate><TrustStrip /></MarketplaceLayout>; }
-function ProfileContent() {
-  const [params,setParams] = useSearchParams(); const tab = params.get('tab') ?? 'profile';
-  const session = useQuery({ queryKey:['session'],queryFn:currentAccount }); const client = useQueryClient(); const navigate = useNavigate();
-  const listings = useQuery({ queryKey:['listings',session.data?.id],queryFn:fetchListings });
-  const orders = useQuery({ queryKey:['orders',session.data?.id],queryFn:fetchOrders });
-  const [error,setError] = useState(''); const [busy,setBusy] = useState(false);
-  async function leave() { setBusy(true); try { await logout(); client.clear(); navigate('/dang-nhap'); } catch(exception) { setError(exception instanceof Error?exception.message:'Chưa đăng xuất được.'); } finally { setBusy(false); } }
-  const user = session.data; if (!user) return null;
-  return <><nav className="profile-tabs" aria-label="Quản lý tài khoản">{[['profile','badge','Thông tin cá nhân & Tài khoản'],['listings','photo_camera','Máy ảnh & Ống kính đã đăng bán'],['addresses','location_on','Địa chỉ nhận thiết bị']].map(([value,icon,label]) => <button key={value} className={tab===value?'active':''} onClick={() => setParams(value==='profile'?{}:{tab:value})}><Icon name={icon} />{label}</button>)}<Link to="/don-hang"><Icon name="receipt_long" />Đơn hàng & Giao dịch</Link></nav>{tab==='addresses'?<AddressBook />:tab==='listings'?<MyListings />:<><div className="profile-columns"><section className="surface-card profile-identity"><div className="profile-name-row"><span className="profile-avatar">{user.fullName.split(' ').filter(Boolean).map(word => word[0]).slice(-2).join('').toUpperCase()}</span><div><h2>{user.fullName}</h2><span className="role-label">{user.roles.includes('SELLER')?'NGƯỜI BÁN ĐÃ XÁC MINH':'THÀNH VIÊN CAMERAHUB'}</span></div><Button variant="secondary" disabled={busy} onClick={() => void leave()}><Icon name="logout" />Đăng xuất</Button></div><div className="profile-info-grid"><div><Icon name="smartphone" /><span><small>SỐ ĐIỆN THOẠI LIÊN HỆ</small><strong>{user.phone || 'Chưa cung cấp'}</strong></span></div><div><Icon name="mail" /><span><small>HỘP THƯ ĐIỆN TỬ</small><strong>{user.email}</strong></span></div><div><Icon name="verified_user" /><span><small>HỒ SƠ NGƯỜI BÁN</small><strong>{user.roles.includes('SELLER')?'Đã được xác minh':'Chưa hoàn tất xác minh'}</strong></span></div><div><Icon name="location_on" /><span><small>ĐỊA CHỈ NHẬN THIẾT BỊ</small><button className="inline-link" onClick={() => setParams({tab:'addresses'})}>Quản lý sổ địa chỉ<Icon name="arrow_forward" /></button></span></div></div><div className="profile-privacy"><Icon name="shield" /><p>Hồ sơ xác minh và số sê-ri đầy đủ của thiết bị được giữ riêng tư.</p><Link to="/tai-khoan/xac-minh">Xem hồ sơ<Icon name="arrow_forward" /></Link></div></section><aside className="surface-card profile-overview"><span className="eyebrow">HOẠT ĐỘNG CỦA BẠN</span><h2>Mỗi thiết bị, một hành trình.</h2><div className="profile-stats"><Link to="/tai-khoan?tab=listings"><strong>{listings.isSuccess?listings.data.filter(item=>item.listingStatus==='PUBLISHED').length:'—'}</strong><span>Thiết bị đang bán</span></Link><Link to="/don-hang"><strong>{orders.isSuccess?orders.data.length:'—'}</strong><span>Đơn hàng & giao dịch</span></Link></div><Link className="button button-primary" to="/dang-ban"><Icon name="add" />Đăng tin thiết bị</Link>{user.roles.includes('ADMIN') && <div className="admin-links"><Link to="/quan-tri/xac-minh">Xét duyệt người bán</Link><Link to="/quan-tri/tin-dang">Duyệt tin đăng</Link></div>}</aside></div><div className="profile-section-heading"><h2>Kho thiết bị của bạn</h2><button className="text-link" onClick={() => setParams({tab:'listings'})}>Quản lý tất cả<Icon name="arrow_forward" /></button></div><MyListings /></>}{error && <p role="alert" className="account-error">{error}</p>}</>;
-}
-
+export function ProfilePage() { return <MarketplaceLayout eyebrow="Trung tâm tài khoản" title="Tài khoản của bạn" description="Quản lý thông tin cá nhân, kho thiết bị và các giao dịch của bạn."><SessionGate><ProfileContent /></SessionGate></MarketplaceLayout>; }
 export function ListingReviewPage() { return <MarketplaceLayout eyebrow="Quản trị CameraHub" title="Duyệt tin đăng thiết bị"><SessionGate><ListingReviews /></SessionGate></MarketplaceLayout>; }
 function ListingReviews() {
   const session = useQuery({ queryKey:['session'],queryFn:currentAccount }); const allowed = session.data?.roles.includes('ADMIN') ?? false;
