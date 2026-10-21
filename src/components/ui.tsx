@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import { formatVnd } from '../lib/products';
 import type { Product } from '../lib/products';
@@ -45,7 +45,10 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: () 
 
 export function ProductMedia({ product, index = 0 }: { product: Product; index?: number }) {
   const path = product.images?.[index];
-  return path && /^\/api\/public\/product-media\/[a-f0-9-]{36}$/i.test(path) ? <img className="actual-product-image" src={path} alt={product.title} loading="lazy" /> : <EquipmentIllustration type={product.deviceType} />;
+  const [failedPath, setFailedPath] = useState<string | undefined>();
+  if (!path || !/^\/api\/public\/product-media\/[a-f0-9-]{36}$/i.test(path)) return <EquipmentIllustration type={product.deviceType} />;
+  if (failedPath === path) return <span className="product-media-fallback"><EquipmentIllustration type={product.deviceType} /><span>Ảnh chưa tải được</span></span>;
+  return <img className="actual-product-image" src={path} alt={product.title} loading="lazy" onError={() => setFailedPath(path)} />;
 }
 
 export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {

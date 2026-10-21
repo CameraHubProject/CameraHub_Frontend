@@ -3,6 +3,7 @@ import type { Product } from './products';
 export interface Address { id?: string; recipientName: string; phone: string; province: string; streetAddress: string; isDefault: boolean }
 export interface Order { id: string; productId: string; buyerId: string; sellerId: string; status: string; title: string; priceVnd: string; totalVnd: string; shippingFeeVnd: string; depositVnd: string; depositRateBps: number; balanceVnd: string; createdAt: string; paymentDeadline: string; address?: Address & { delivery?: string; showroom?: { name: string; address: string } }; payments?: { stage: string; amountVnd: string; status: string; createdAt: string }[] }
 export interface Model { id: string; brand: string; modelName: string; deviceType: string }
+export interface Brand { id: string; name: string }
 export interface Showroom { id: string; name: string; address: string }
 export interface Buyback { id: string; model: string; conditionNotes: string; expectedPriceVnd: string | null; status: string; createdAt: string }
 export const purposes = [['TRAVEL', 'Chụp du lịch / đường phố', 'travel_explore'], ['VLOG', 'Làm vlog sáng tạo & TikTok', 'videocam'], ['PRO', 'Chụp dịch vụ / Sự kiện', 'photo_camera'], ['BEGINNER', 'Sinh viên nhập môn cơ bản', 'school']] as const;
@@ -26,6 +27,7 @@ export const fetchOrders = () => request<Order[]>('/api/marketplace/orders');
 export const fetchOrder = (id: string) => request<Order>(`/api/marketplace/orders/${encodeURIComponent(id)}`);
 export const fetchAddresses = () => request<Address[]>('/api/marketplace/addresses');
 export const fetchModels = () => request<Model[]>('/api/public/models');
+export const fetchBrands = () => request<Brand[]>('/api/public/brands');
 export const fetchShowrooms = () => request<Showroom[]>('/api/public/showrooms');
 export const fetchListings = () => request<Product[]>('/api/marketplace/listings');
 export const fetchBuybacks = () => request<Buyback[]>('/api/marketplace/buyback');
