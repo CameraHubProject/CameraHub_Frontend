@@ -1,6 +1,6 @@
 /* Visual reference: EXE CP3, Figma frames 44:903, 44:897, 44:898 and 44:899. */
-:root { --color-canvas: #f8f7f7; --color-border: #e9e7e7; --color-accent: #858b70; }
-.button, .icon-button { border-radius: 5px; }
+/* Shared colors, spacing and radii are owned by styles.css. */
+.button, .icon-button { border-radius: var(--radius-sm); }
 .button-olive { background: #626950; color: white; }
 .button-olive:hover { background: #4e563f; }
 .prototype-trustbar { min-height: 23px; background: #10110f; color: #f2f3ed; display: flex; align-items: center; justify-content: center; gap: 42px; padding: 4px 20px; font-size: 10px; }

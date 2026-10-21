@@ -10,14 +10,26 @@ export function Icon({ name }: { name: string }) {
   return <span className="material-symbols-outlined" aria-hidden="true">{name}</span>;
 }
 
-export function Button({ variant = 'primary', className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'light' }) {
-  return <button className={`button button-${variant} ${className}`} {...props} />;
+export function Button({ variant = 'primary', className = '', loading = false, disabled, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'light' | 'ghost'; loading?: boolean }) {
+  return <button className={`button button-${variant} ${className}`} {...props} disabled={disabled || loading} aria-busy={loading || props['aria-busy']}>{loading && <Icon name="progress_activity" />}{children}</button>;
 }
 
-export function Input({ label, hideLabel, icon, trailing, id, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hideLabel?: boolean; icon?: string; trailing?: ReactNode }) {
+export function Input({ label, hideLabel, icon, trailing, id, onBlur, onChange, onInvalid, 'aria-describedby': describedBy, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hideLabel?: boolean; icon?: string; trailing?: ReactNode }) {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
-  return <div className="input-field"><label className={hideLabel ? 'sr-only' : ''} htmlFor={fieldId}>{label}</label><div className="input-wrap">{icon && <Icon name={icon} />}<input id={fieldId} {...props} />{trailing}</div></div>;
+  const [error, setError] = useState('');
+  function validation(input: HTMLInputElement) {
+    if (input.validity.valid) return '';
+    if (input.validity.valueMissing) return `Vui lòng nhập ${label.replace(/\s*\*$/, '').toLocaleLowerCase('vi-VN')}.`;
+    if (input.validity.typeMismatch && input.type === 'email') return 'Vui lòng nhập email hợp lệ, ví dụ ten@email.com.';
+    if (input.validity.tooShort) return `Vui lòng nhập ít nhất ${input.minLength} ký tự.`;
+    if (input.validity.rangeUnderflow) return `Giá trị tối thiểu là ${input.min}.`;
+    if (input.validity.rangeOverflow) return `Giá trị tối đa là ${input.max}.`;
+    if (input.validity.patternMismatch) return 'Thông tin chưa đúng định dạng. Vui lòng kiểm tra lại.';
+    return 'Vui lòng kiểm tra lại thông tin đã nhập.';
+  }
+  return <div className="input-field"><label className={hideLabel ? 'sr-only' : ''} htmlFor={fieldId}>{label}</label><div className="input-wrap">{icon && <Icon name={icon} />}<input id={fieldId} {...props} aria-invalid={error ? true : props['aria-invalid']} aria-describedby={[describedBy, error ? `${fieldId}-error` : ''].filter(Boolean).join(' ') || undefined}
+    onBlur={event => { setError(validation(event.currentTarget)); onBlur?.(event); }} onChange={event => { if (error) setError(validation(event.currentTarget)); onChange?.(event); }} onInvalid={event => { setError(validation(event.currentTarget)); onInvalid?.(event); }} />{trailing}</div>{error && <span id={`${fieldId}-error`} className="input-error" role="alert">{error}</span>}</div>;
 }
 
 export function EmptyState({ icon, title, description, action }: { icon: string; title: string; description: string; action?: ReactNode }) {
@@ -40,7 +52,10 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: () 
   const cart = useCart();
   const typeLabel = product.deviceType === 'BODY' ? 'Thân máy ảnh' : product.deviceType === 'LENS' ? 'Ống kính' : 'Phụ kiện';
   const inspectionLabel = product.inspectionBadge === 'CERTIFIED' ? 'Có huy hiệu kiểm định' : product.inspectionBadge === 'NOT_CERTIFIED' ? 'Chưa đạt chứng nhận' : product.inspectionBadge === 'EXPIRED' ? 'Huy hiệu đã hết hạn' : 'Chưa kiểm định';
-  return <article className="product-card prototype-product-card"><Link className="product-stage" to={`/may-anh/${product.id}`}><ProductMedia product={product} /><div className="product-badges"><ConditionBadge text={product.presentation?.conditionGrade ?? typeLabel} /><StatusBadge verified={product.inspectionBadge === 'CERTIFIED'}>{inspectionLabel}</StatusBadge>{product.presentation?.score != null && <span className="inspection-score">Điểm {product.presentation.score}/10</span>}</div><div className="product-stage-bottom"><span><Icon name={product.shutterCount === null ? 'info' : 'speed'} />{product.shutterCount === null ? 'Xem mô tả tình trạng' : `${new Intl.NumberFormat('vi-VN').format(product.shutterCount)} shots`}</span><span>{product.presentation?.warrantyMonths ? `${product.presentation.warrantyMonths}M Care` : product.images?.length ? 'Ảnh người bán' : 'Hình minh họa'}</span></div></Link><div className="product-content"><p className="eyebrow">{product.brand} · {product.modelName}</p><h3><Link to={`/may-anh/${product.id}`}>{product.title}</Link></h3><div className="product-condition-box"><span>Tình trạng người bán cung cấp</span><p className="product-condition">{product.conditionNotes}</p></div><strong className="product-price">{formatVnd(product.priceVnd)}</strong><div className="product-card-actions"><Button variant="secondary" onClick={onOpen}><Icon name="visibility" />Chi tiết & Biên bản</Button><Button onClick={() => addToCart(product.id)} aria-label={`${cart.includes(product.id) ? 'Đã chọn' : 'Chọn mua'} ${product.title}`}><Icon name={cart.includes(product.id) ? 'check' : 'shopping_bag'} />{cart.includes(product.id) ? 'Đã chọn' : 'Chọn mua'}</Button></div></div></article>;
+  const original = product.presentation?.originalPriceVnd;
+  const hasDiscount = !!original && /^[1-9]\d*$/.test(original) && BigInt(original) > BigInt(product.priceVnd);
+  const saving = hasDiscount ? ((BigInt(original!) - BigInt(product.priceVnd)) * 100n / BigInt(original!)).toString() : '';
+  return <article className="product-card prototype-product-card"><Link className="product-stage" to={`/may-anh/${product.id}`}><ProductMedia product={product} /><div className="product-badges"><ConditionBadge text={product.presentation?.conditionGrade ?? typeLabel} /><StatusBadge verified={product.inspectionBadge === 'CERTIFIED'}>{inspectionLabel}</StatusBadge>{product.presentation?.score != null && <span className="inspection-score">Điểm {product.presentation.score}/10</span>}</div><div className="product-stage-bottom"><span><Icon name={product.shutterCount === null ? 'info' : 'speed'} />{product.shutterCount === null ? 'Xem mô tả tình trạng' : `${new Intl.NumberFormat('vi-VN').format(product.shutterCount)} shots`}</span><span>{product.presentation?.warrantyMonths ? `${product.presentation.warrantyMonths}M Care` : product.images?.length ? 'Ảnh người bán' : 'Hình minh họa'}</span></div></Link><div className="product-content"><p className="eyebrow">{product.brand} · {product.modelName}</p><h3><Link to={`/may-anh/${product.id}`}>{product.title}</Link></h3><div className="product-condition-box"><span>Tình trạng người bán cung cấp</span><p className="product-condition">{product.conditionNotes}</p></div><div className="product-price-row"><strong className="product-price">{formatVnd(product.priceVnd)}</strong>{hasDiscount && <span className="product-saving">Tiết kiệm {saving}%</span>}</div>{hasDiscount && <del className="product-original-price">{formatVnd(original!)}</del>}<div className="product-card-actions"><Button variant="secondary" onClick={onOpen}><Icon name="visibility" />Chi tiết & Biên bản</Button><Button onClick={() => addToCart(product.id)} aria-label={`${cart.includes(product.id) ? 'Đã chọn' : 'Chọn mua'} ${product.title}`}><Icon name={cart.includes(product.id) ? 'check' : 'shopping_bag'} />{cart.includes(product.id) ? 'Đã chọn' : 'Chọn mua'}</Button></div></div></article>;
 }
 
 export function ProductMedia({ product, index = 0 }: { product: Product; index?: number }) {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { currentAccount } from '../lib/identity';
@@ -8,14 +8,21 @@ import { useCart } from '../lib/cart';
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const menuButton = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
   const cart = useCart();
   const session = useQuery({ queryKey: ['session'], queryFn: currentAccount, retry: false, staleTime: 15_000 });
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setMenuOpen(false); menuButton.current?.focus(); } };
+    document.addEventListener('keydown', close); return () => document.removeEventListener('keydown', close);
+  }, [menuOpen]);
   return <>
     <div className="prototype-trustbar"><span><Icon name="verified_user" />Kiểm định tùy chọn</span><span><Icon name="payments" />Phí sàn 0đ trong MVP</span><span><Icon name="schedule" />48 giờ bảo vệ · Giao dịch mô phỏng</span></div>
     <header className="prototype-header"><div className="container prototype-header-inner">
       <Link className="brand" to="/" aria-label="CameraHub — Trang chủ">CameraHub<span className="brand-dot" /></Link>
-      <nav className={`prototype-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Điều hướng chính" onClick={() => setMenuOpen(false)}>
+      <nav id="site-navigation" className={`prototype-nav ${menuOpen ? 'is-open' : ''}`} aria-label="Điều hướng chính" onClick={event => { if (event.target instanceof Element && event.target.closest('a')) setMenuOpen(false); }}>
+        <form className="mobile-menu-search" role="search" onSubmit={event => { event.preventDefault(); setMenuOpen(false); navigate(`/may-anh${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`); }}><label><span className="sr-only">Tìm thiết bị trong menu</span><input placeholder="Tìm tên máy, hãng máy…" value={query} onChange={event => setQuery(event.target.value)} /></label><button type="submit" aria-label="Tìm thiết bị"><Icon name="search" /></button></form>
         <NavLink to="/" end>Trang chủ</NavLink><NavLink to="/may-anh">Máy ảnh</NavLink>
         <NavLink to="/ai-tu-van"><Icon name="auto_awesome" />AI tư vấn</NavLink><NavLink to="/thu-mua-may-cu">Thu mua máy cũ</NavLink><Link to="/#bao-ve">Về CameraHub</Link>
       </nav>
@@ -26,7 +33,7 @@ export function SiteHeader() {
         <Link className="cart-nav" to="/gio-hang" aria-label={`Giỏ hàng, ${cart.length} thiết bị`}><Icon name="shopping_bag" />{cart.length > 0 && <span>{cart.length}</span>}</Link>
         {session.data?.roles.includes('ADMIN') && <Link className="role-chip" to="/quan-tri/xac-minh"><span className="tiny-dot" />Quản trị</Link>}
         <Link className="prototype-account" to={session.data ? '/tai-khoan' : '/dang-nhap'} aria-label={session.data ? 'Mở tài khoản' : 'Đăng nhập'}><Icon name="person" /><span>{session.data ? 'Tài khoản' : 'Đăng nhập'}</span></Link>
-        <button className="icon-button prototype-menu-toggle" aria-label={menuOpen ? 'Đóng menu' : 'Mở menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
+        <button ref={menuButton} className="icon-button prototype-menu-toggle" aria-label={menuOpen ? 'Đóng menu' : 'Mở menu'} aria-controls="site-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
       </div>
     </div></header>
   </>;

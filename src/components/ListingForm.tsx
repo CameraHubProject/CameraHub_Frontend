@@ -92,7 +92,7 @@ export function ListingForm() {
       <label className="terms-check"><input type="checkbox" required defaultChecked={false} disabled={busy || !!createdId} /><span>Tôi xác nhận thông tin và hình ảnh phản ánh đúng thiết bị.</span></label>
       {busy && <div className="listing-upload-progress" role="status"><span>{createdId ? `Đã lưu ${savedPhotos}/${photos.length} ảnh` : 'Đang lưu thông tin tin đăng…'}</span><progress max={Math.max(photos.length, 1)} value={savedPhotos} aria-label="Tiến trình tải ảnh" /></div>}
       {error && <p className="account-error" role="alert">{error}</p>}
-      <Button disabled={busy || (!createdId && !brands.data?.length)}>{busy ? 'Đang xử lý…' : createdId ? 'Hoàn tất các ảnh còn lại' : 'Gửi tin đăng để duyệt'}<Icon name={busy ? 'progress_activity' : 'arrow_forward'} /></Button>
+      <Button loading={busy} disabled={!createdId && !brands.data?.length}>{busy ? 'Đang xử lý…' : createdId ? 'Hoàn tất các ảnh còn lại' : 'Gửi tin đăng để duyệt'}{!busy && <Icon name="arrow_forward" />}</Button>
       {createdId && !busy && <Link className="text-link" to="/tai-khoan?tab=listings">Về kho thiết bị<Icon name="arrow_forward" /></Link>}
     </aside>
   </form>;

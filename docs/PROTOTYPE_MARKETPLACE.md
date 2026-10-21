@@ -38,7 +38,7 @@ Default API: port 8080. Optional ignored `.env.local`: `CAMERAHUB_API_URL=http:/
 - The advisor uses recorded budget/use-case data; no external AI is connected.
 - Email/SMS OTP, password recovery and persistent login are not implemented.
 - Showrooms require actual configured records. An empty configuration explains that pickup is unavailable and offers delivery.
-- New seller listings enter Admin review. Editing/resubmitting revisions and retrying individual failed photo uploads are not yet exposed as UI flows.
+- New seller listings enter Admin review. The listing form now selects brands and previews photos, retaining successful uploads when retrying failed photos in the same open form. Editing existing listings or resubmitting revisions is not yet exposed. See UI_UX_IMPROVEMENTS.md for the API compatibility and UI changes.
 - Unpaid reservations can be cancelled manually. Automatic expiry release, paid-order refunds, fulfilment and warranty/return operations remain outside this implementation.
 - Existing demo identities and listings are preserved. No fake showroom addresses, inspection scores or warranty records are seeded.
 
