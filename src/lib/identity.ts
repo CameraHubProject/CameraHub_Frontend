@@ -38,6 +38,22 @@ export async function register(data: { email: string; password: string; fullName
   await mutate('/api/auth/register', JSON.stringify(data), 'application/json');
 }
 export async function logout(): Promise<void> { await mutate('/api/auth/logout', ''); }
+export interface GoogleLoginStatus { enabled: boolean; pendingEmail: string | null }
+export async function googleLoginStatus(): Promise<GoogleLoginStatus> {
+  return (await checked(await fetch('/api/auth/google/status', { credentials: 'same-origin', signal: AbortSignal.timeout(10_000) }))).json() as Promise<GoogleLoginStatus>;
+}
+export async function confirmGoogleLink(password: string): Promise<void> {
+  await mutate('/api/auth/google/link', JSON.stringify({ password }), 'application/json');
+}
+export function googleLoginMessage(reason: string | null): string {
+  switch (reason) {
+    case 'cancelled': return 'Bạn đã hủy đăng nhập Google. Có thể thử lại bất cứ lúc nào.';
+    case 'inactive': return 'Tài khoản CameraHub hiện không hoạt động. Vui lòng liên hệ hỗ trợ.';
+    case 'unverified': return 'Google chưa xác minh email này. Hãy xác minh email rồi thử lại.';
+    case 'failed': return 'Chưa đăng nhập được bằng Google. Vui lòng thử lại từ nút bên dưới.';
+    default: return '';
+  }
+}
 export async function fetchVerifications(admin = false): Promise<Verification[]> {
   return (await checked(await fetch(admin ? '/api/admin/seller-verifications' : '/api/seller-verification',
     { credentials: 'same-origin', signal: AbortSignal.timeout(10_000) }))).json() as Promise<Verification[]>;

@@ -266,6 +266,18 @@
 .photo-thumbnails { display:flex; gap:10px; padding:12px 4px; flex-wrap:wrap; } .photo-thumbnails button { width:64px; height:64px; border:1px solid #e1e5d6; border-radius:5px; padding:3px; background:#f4f5ef; } .photo-thumbnails button[aria-pressed=true] { border:2px solid #778756; }
 
 /* Shared marketplace control states and image geometry. */
+.google-auth-button { display:flex; align-items:center; justify-content:center; gap:12px; min-height:48px; width:100%; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:white; font-size:14px; font-weight:600; transition:background .15s,border-color .15s; }
+.google-auth-button:hover { background:var(--color-canvas); border-color:var(--color-accent); }
+.google-auth-button[aria-disabled=true] { opacity:.55; cursor:not-allowed; }
+.google-auth-button svg { flex-shrink:0; }
+.google-auth > p { color:var(--color-muted); font-size:12px; line-height:1.7; margin-top:10px; text-align:center; }
+.google-auth > p button { min-height:44px; text-decoration:underline; }
+.auth-divider { display:flex; align-items:center; gap:12px; margin-block:20px; font-size:12px; color:var(--color-muted); }
+.auth-divider::before,.auth-divider::after { content:''; height:1px; background:var(--color-border); flex:1; }
+.google-auth-notice,.google-link-panel { border:1px solid var(--color-border); background:var(--color-secondary); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; font-size:13px; line-height:1.8; }
+.google-link-panel h2 { font-size:17px; margin-bottom:8px; }
+.google-link-panel p { margin-bottom:16px; overflow-wrap:anywhere; }
+.google-auth-error { margin-top:16px; font-size:13px; }
 .mobile-menu-search { display:none; }
 .prototype-header-search { max-width:300px; }
 .prototype-header-search input { font-size:12px; }

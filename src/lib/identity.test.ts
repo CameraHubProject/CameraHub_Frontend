@@ -1,8 +1,28 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { currentAccount, login, logout, submitVerification } from './identity';
+import { confirmGoogleLink, currentAccount, googleLoginMessage, googleLoginStatus, login, logout, submitVerification } from './identity';
 
 afterEach(() => vi.unstubAllGlobals());
 describe('identity requests', () => {
+  it('reads Google availability without sending client credentials', async () => {
+    const fetcher = vi.fn().mockResolvedValue(Response.json({ enabled: true, pendingEmail: null })); vi.stubGlobal('fetch', fetcher);
+    await expect(googleLoginStatus()).resolves.toEqual({ enabled: true, pendingEmail: null });
+    expect(fetcher.mock.calls[0][0]).toBe('/api/auth/google/status');
+    expect(fetcher.mock.calls[0][1].credentials).toBe('same-origin');
+  });
+  it('confirms linking using server session and CSRF, never an email or Google subject from the browser', async () => {
+    const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ headerName: 'X-CSRF-TOKEN', token: 'link-token' }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 })); vi.stubGlobal('fetch', fetcher);
+    await confirmGoogleLink('existing-password');
+    expect(fetcher.mock.calls[1][0]).toBe('/api/auth/google/link');
+    expect(JSON.parse(fetcher.mock.calls[1][1].body)).toEqual({ password: 'existing-password' });
+    expect(fetcher.mock.calls[1][1].headers['X-CSRF-TOKEN']).toBe('link-token');
+  });
+  it('uses fixed Vietnamese messages instead of reflecting arbitrary OAuth error text', () => {
+    expect(googleLoginMessage('cancelled')).toContain('hủy');
+    expect(googleLoginMessage('failed')).toContain('thử lại');
+    expect(googleLoginMessage('<script>')).toBe('');
+    expect(googleLoginMessage('link_required')).toBe('');
+  });
   it('treats only 401 as logged out and reports server failure', async () => {
     const fetcher = vi.fn().mockResolvedValueOnce(new Response('', { status: 401 })).mockResolvedValueOnce(new Response('', { status: 503 }));
     vi.stubGlobal('fetch', fetcher);
