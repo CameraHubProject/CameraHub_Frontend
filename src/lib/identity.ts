@@ -31,8 +31,9 @@ async function mutate(path: string, body: BodyInit, contentType?: string): Promi
     body, signal: AbortSignal.timeout(30_000) }));
 }
 
-export async function login(email: string, password: string): Promise<void> {
-  await mutate('/api/auth/login', new URLSearchParams({ email, password }), 'application/x-www-form-urlencoded');
+export async function login(identifier: string, password: string): Promise<void> {
+  // Keep the existing API field while accepting either phone or email as its value.
+  await mutate('/api/auth/login', new URLSearchParams({ email: identifier.trim(), password }), 'application/x-www-form-urlencoded');
 }
 export async function register(data: { email: string; password: string; fullName: string; phone: string }): Promise<void> {
   await mutate('/api/auth/register', JSON.stringify(data), 'application/json');

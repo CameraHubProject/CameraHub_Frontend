@@ -3,6 +3,14 @@ import { confirmGoogleLink, currentAccount, googleLoginMessage, googleLoginStatu
 
 afterEach(() => vi.unstubAllGlobals());
 describe('identity requests', () => {
+  it('submits phone identifiers through the existing login endpoint without changing the password', async () => {
+    const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ headerName: 'X-CSRF-TOKEN', token: 'phone-token' }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 })); vi.stubGlobal('fetch', fetcher);
+    await login(' +84 912 345 678 ', '  password-with-spaces  ');
+    expect(fetcher.mock.calls[1][0]).toBe('/api/auth/login');
+    expect(fetcher.mock.calls[1][1].body.get('email')).toBe('+84 912 345 678');
+    expect(fetcher.mock.calls[1][1].body.get('password')).toBe('  password-with-spaces  ');
+  });
   it('reads Google availability without sending client credentials', async () => {
     const fetcher = vi.fn().mockResolvedValue(Response.json({ enabled: true, pendingEmail: null })); vi.stubGlobal('fetch', fetcher);
     await expect(googleLoginStatus()).resolves.toEqual({ enabled: true, pendingEmail: null });
