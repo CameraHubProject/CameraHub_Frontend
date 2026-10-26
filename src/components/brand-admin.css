@@ -1,0 +1,139 @@
+.brand-admin-nav {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    font-size: 12px;
+}
+
+.brand-admin-nav [aria-current=page] {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.brand-admin-layout {
+    display: grid;
+    grid-template-columns:minmax(0, 1fr) 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+.brand-admin-layout .surface-card {
+    margin: 0;
+}
+
+.brand-admin-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.brand-admin-heading h2, .brand-admin-create h2 {
+    font-size: 21px;
+    margin-bottom: 6px;
+}
+
+.brand-admin-heading p, .brand-admin-create > p {
+    font-size: 12px;
+    color: var(--color-muted);
+    line-height: 1.8;
+}
+
+.brand-admin-emblem {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-secondary);
+    color: var(--color-accent);
+}
+
+.brand-admin-rows {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+}
+
+.brand-admin-rows > li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.brand-admin-name {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.brand-admin-name strong {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.brand-admin-name small {
+    font-size: 11px;
+    color: var(--color-muted);
+}
+
+.brand-admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.brand-admin-actions .button {
+    min-height: 44px;
+    padding: 9px 12px;
+    font-size: 11px;
+}
+
+.brand-admin-actions .material-symbols-outlined {
+    font-size: 17px;
+}
+
+.brand-admin-create > .eyebrow {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.brand-admin-create .account-form {
+    margin-block: 20px;
+}
+
+.brand-admin-create .form-help {
+    font-size: 11px;
+}
+
+@media (max-width: 900px) {
+    .brand-admin-layout {
+        grid-template-columns:minmax(0, 1fr);
+    }
+
+    .brand-admin-create {
+        grid-row: 1;
+    }
+}
+
+@media (max-width: 450px) {
+    .brand-admin-rows > li {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .brand-admin-actions {
+        flex-wrap: wrap;
+    }
+
+    .brand-admin-nav {
+        gap: 12px;
+    }
+}

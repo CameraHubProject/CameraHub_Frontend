@@ -105,7 +105,7 @@ npm.cmd run dev
 
 Phiên hiện tại dùng file `.env.local` bị Git bỏ qua với `CAMERAHUB_API_URL=http://127.0.0.1:8081` vì backend IntelliJ đang chiếm 8080. Giữ backend 8081 và Vite 5173 hoạt động; không khởi chạy thêm bản trùng cổng. Nếu đổi API URL phải khởi động lại Vite.
 
-Mở `http://127.0.0.1:5173/tai-khoan` hoặc `/dang-ban`. Đăng nhập bằng tài khoản người bán đã xác minh để thử form; chọn hãng, thêm ảnh và xem trước. Khi gửi tin thật, tin sẽ chờ Admin duyệt; kiểm tra ảnh trong tab Thiết bị của tôi trước và sau khi duyệt. Kiểm tra ảnh công khai ở chi tiết sản phẩm và giỏ hàng sau khi duyệt.
+Mở `http://127.0.0.1:5173/tai-khoan` hoặc `/dang-ban`. Đăng nhập bằng tài khoản thường, không cần xác minh người bán, để thử form; chọn hãng, thêm ảnh và xem trước. Khi gửi tin thật, tin sẽ chờ Admin duyệt; kiểm tra ảnh trong tab Thiết bị của tôi trước và sau khi duyệt. Kiểm tra ảnh công khai ở chi tiết sản phẩm và giỏ hàng sau khi duyệt.
 
 Chạy lại kiểm thử bằng `npm.cmd test`, `npm.cmd run build` và `.\scripts\Invoke-Backend.ps1 Integration` ở đúng repository.
 

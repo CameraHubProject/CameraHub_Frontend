@@ -1,21 +1,94 @@
-import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { fetchProduct, purposes } from '../lib/marketplace';
-import { formatVnd } from '../lib/products';
-import { addToCart, useCart } from '../lib/cart';
-import { MarketplaceLayout, TrustStrip } from './MarketplaceLayout';
-import { Button, EmptyState, Icon, ProductMedia, Skeleton } from './ui';
+import {useState} from 'react';
+import {Link, useNavigate, useParams} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
+import {fetchProduct, purposes} from '../lib/marketplace';
+import {formatVnd} from '../lib/products';
+import {addToCart, useCart} from '../lib/cart';
+import {MarketplaceLayout, TrustStrip} from './MarketplaceLayout';
+import {Button, EmptyState, Icon, ProductMedia, Skeleton} from './ui';
 
 export function ProductPage() {
-  const { id = '' } = useParams(); const navigate = useNavigate(); const cart = useCart();
-  const product = useQuery({ queryKey: ['product', id], queryFn: () => fetchProduct(id), retry: false });
-  const [tab, setTab] = useState('detail');
-  const [photo, setPhoto] = useState({ id, index: 0 });
-  const item = product.data;
-  return <MarketplaceLayout eyebrow="Chi tiết & biên bản thiết bị" title={item?.title ?? 'Khám phá thiết bị'}>
-    {product.isPending && <Skeleton />}{product.isError && <EmptyState icon="search_off" title="Không tìm thấy thiết bị" description="Tin đăng có thể đã được đặt mua hoặc ngừng bán." action={<Link className="button button-primary" to="/may-anh">Khám phá kho máy</Link>} />}
-    {item && <><div className="product-page-grid"><section className="surface-card detail-visual"><div className="detail-image"><ProductMedia product={item} index={photo.id === id ? photo.index : 0} /><span className="image-disclaimer">{item.images?.length ? 'Ảnh thiết bị do người bán cung cấp' : 'Hình minh họa loại thiết bị'}</span></div>{item.images && item.images.length > 1 && <div className="photo-thumbnails" aria-label="Ảnh thiết bị">{item.images.map((url,index) => <button type="button" key={url} aria-label={`Xem ảnh ${index+1}`} aria-pressed={(photo.id === id ? photo.index : 0) === index} onClick={() => setPhoto({id,index})}><ProductMedia product={item} index={index} /></button>)}</div>}<div className="detail-visual-caption"><Icon name="photo_camera" /><span>{item.brand} · {item.modelName}</span><span>{item.deviceType === 'LENS' ? 'Ống kính' : 'Thiết bị nhiếp ảnh'}</span></div></section><section className="surface-card detail-purchase"><span className="eyebrow">{item.brand} · {item.modelName}</span><h2>{item.title}</h2><div className="detail-status"><span><Icon name="inventory_2" />Đang bán · 1 thiết bị</span><span><Icon name="fact_check" />{item.inspectionBadge === 'CERTIFIED' ? 'Có chứng nhận kiểm định' : 'Xem tình trạng bên dưới'}</span></div><p className="detail-page-price">{formatVnd(item.priceVnd)}</p><div className="condition-summary"><strong>Tình trạng thiết bị</strong><p>{item.conditionNotes}</p>{item.shutterCount !== null && <span><Icon name="speed" />{item.shutterCount.toLocaleString('vi-VN')} shots</span>}</div>{!!item.presentation?.purposes?.length && <div className="purpose-tags">{item.presentation.purposes.map(value => <span key={value}>{purposes.find(([key]) => key === value)?.[1] ?? value}</span>)}</div>}<div className="purchase-actions"><Button onClick={() => addToCart(item.id)}><Icon name="shopping_bag" />{cart.includes(item.id) ? 'Đã có trong giỏ hàng' : 'Thêm vào giỏ hàng'}</Button><Button variant="secondary" onClick={() => { addToCart(item.id); navigate('/gio-hang'); }}>Chọn mua ngay<Icon name="arrow_forward" /></Button></div><Link className="text-link" to="/gio-hang">Xem giỏ hàng ({cart.length})<Icon name="arrow_forward" /></Link><p className="form-help"><Icon name="lock" />Giá và tình trạng được kiểm tra lại khi tạo đơn.</p></section></div>
-      <section className="surface-card product-report"><nav className="market-tabs" aria-label="Thông tin thiết bị">{[['detail','Thông tin chi tiết'],['inspection','Biên bản kiểm định'],['accessories','Phụ kiện & lịch sử']].map(([key,label]) => <button key={key} className={tab === key ? 'active' : ''} onClick={() => setTab(key)}>{label}</button>)}</nav>{tab === 'detail' && <div><h2>Câu chuyện của thiết bị</h2><p className="preserve-lines">{item.description || item.conditionNotes}</p><dl className="spec-grid">{Object.entries(item.specs ?? {}).map(([key,value]) => <div key={key}><dt>{key}</dt><dd>{value}</dd></div>)}</dl></div>}{tab === 'inspection' && <div><h2>Tình trạng kiểm định</h2>{item.inspectionChecks?.length ? <div className="inspection-table">{item.inspectionChecks.map(check => <div key={check.name}><span><Icon name={check.result === 'PASS' ? 'check_circle' : 'info'} />{check.name}</span><strong>{({PASS:'Đạt',FAIL:'Chưa đạt',WARNING:'Cần lưu ý',NOT_TESTED:'Chưa kiểm tra'} as Record<string,string>)[check.result] ?? check.result}</strong><p>{check.notes}</p></div>)}</div> : <p>Thiết bị này chưa có biên bản kiểm định được công bố. Bạn có thể xem mô tả người bán và đối chiếu tình trạng trước khi quyết định.</p>}</div>}{tab === 'accessories' && <div><h2>Phụ kiện đi kèm</h2><p>{item.accessories || 'Người bán chưa cung cấp thông tin phụ kiện.'}</p><h3>Lịch sử sửa chữa</h3><p>{item.repairHistory || 'Chưa có thông tin lịch sử sửa chữa.'}</p></div>}</section><TrustStrip /></>}
-  </MarketplaceLayout>;
+    const {id = ''} = useParams();
+    const navigate = useNavigate();
+    const cart = useCart();
+    const product = useQuery({queryKey: ['product', id], queryFn: () => fetchProduct(id), retry: false});
+    const [tab, setTab] = useState('detail');
+    const [photo, setPhoto] = useState({id, index: 0});
+    const item = product.data;
+    return <MarketplaceLayout eyebrow="Chi tiết & biên bản thiết bị" title={item?.title ?? 'Khám phá thiết bị'}>
+        {product.isPending && <Skeleton/>}{product.isError &&
+        <EmptyState icon="search_off" title="Không tìm thấy thiết bị"
+                    description="Tin đăng có thể đã được đặt mua hoặc ngừng bán."
+                    action={<Link className="button button-primary" to="/may-anh">Khám phá kho máy</Link>}/>}
+        {item && <>
+            <div className="product-page-grid">
+                <section className="surface-card detail-visual">
+                    <div className="detail-image"><ProductMedia product={item}
+                                                                index={photo.id === id ? photo.index : 0}/><span
+                        className="image-disclaimer">{item.images?.length ? 'Ảnh thiết bị do người bán cung cấp' : 'Hình minh họa loại thiết bị'}</span>
+                    </div>
+                    {item.images && item.images.length > 1 &&
+                        <div className="photo-thumbnails" aria-label="Ảnh thiết bị">{item.images.map((url, index) =>
+                            <button type="button" key={url} aria-label={`Xem ảnh ${index + 1}`}
+                                    aria-pressed={(photo.id === id ? photo.index : 0) === index}
+                                    onClick={() => setPhoto({id, index})}><ProductMedia product={item} index={index}/>
+                            </button>)}</div>}
+                    <div className="detail-visual-caption"><Icon
+                        name="photo_camera"/><span>{item.brand} · {item.modelName}</span><span>{item.deviceType === 'LENS' ? 'Ống kính' : 'Thiết bị nhiếp ảnh'}</span>
+                    </div>
+                </section>
+                <section className="surface-card detail-purchase"><span
+                    className="eyebrow">{item.brand} · {item.modelName}</span><h2>{item.title}</h2>
+                    <div className="detail-status"><span><Icon
+                        name="inventory_2"/>{item.listingStatus === 'SOLD' ? 'Đã bán' : 'Đang bán · 1 thiết bị'}</span><span><Icon
+                        name="fact_check"/>{item.inspectionBadge === 'CERTIFIED' ? 'Có chứng nhận kiểm định' : 'Xem tình trạng bên dưới'}</span>
+                    </div>
+                    <p className="detail-page-price">{formatVnd(item.priceVnd)}</p>{item.sellerId &&
+                        <Link className="seller-profile-link" to={`/thanh-vien/${item.sellerId}`}><Icon
+                            name="person"/><span><small>Người bán</small><strong>{item.sellerName || 'Thành viên CameraHub'}</strong><small>Xem thiết bị & đánh giá</small></span><Icon
+                            name="chevron_right"/></Link>}
+                    <div className="condition-summary"><strong>Tình trạng thiết bị</strong>
+                        <p>{item.conditionNotes}</p>{item.shutterCount !== null &&
+                            <span><Icon name="speed"/>{item.shutterCount.toLocaleString('vi-VN')} shots</span>}</div>
+                    {!!item.presentation?.purposes?.length &&
+                        <div className="purpose-tags">{item.presentation.purposes.map(value => <span
+                            key={value}>{purposes.find(([key]) => key === value)?.[1] ?? value}</span>)}</div>}{item.listingStatus === 'SOLD' ?
+                        <p className="account-notice"><Icon name="check_circle"/>Thiết bị này đã được bán. Xem trang
+                            người bán để khám phá các tin khác.</p> : <>
+                            <div className="purchase-actions"><Button onClick={() => addToCart(item.id)}><Icon
+                                name="shopping_bag"/>{cart.includes(item.id) ? 'Đã có trong giỏ hàng' : 'Thêm vào giỏ hàng'}
+                            </Button><Button variant="secondary" onClick={() => {
+                                addToCart(item.id);
+                                navigate('/gio-hang');
+                            }}>Chọn mua ngay<Icon name="arrow_forward"/></Button></div>
+                            <Link className="text-link" to="/gio-hang">Xem giỏ hàng ({cart.length})<Icon
+                                name="arrow_forward"/></Link></>}<p className="form-help"><Icon name="lock"/>Giá và tình
+                        trạng được kiểm tra lại khi tạo đơn.</p></section>
+            </div>
+            <section className="surface-card product-report">
+                <nav className="market-tabs"
+                     aria-label="Thông tin thiết bị">{[['detail', 'Thông tin chi tiết'], ['inspection', 'Biên bản kiểm định'], ['accessories', 'Phụ kiện & lịch sử']].map(([key, label]) =>
+                    <button key={key} className={tab === key ? 'active' : ''}
+                            onClick={() => setTab(key)}>{label}</button>)}</nav>
+                {tab === 'detail' && <div><h2>Câu chuyện của thiết bị</h2><p
+                    className="preserve-lines">{item.description || item.conditionNotes}</p>
+                    <dl className="spec-grid">{Object.entries(item.specs ?? {}).map(([key, value]) => <div key={key}>
+                        <dt>{key}</dt>
+                        <dd>{value}</dd>
+                    </div>)}</dl>
+                </div>}{tab === 'inspection' && <div><h2>Tình trạng kiểm định</h2>{item.inspectionChecks?.length ?
+                <div className="inspection-table">{item.inspectionChecks.map(check => <div key={check.name}><span><Icon
+                    name={check.result === 'PASS' ? 'check_circle' : 'info'}/>{check.name}</span><strong>{({
+                    PASS: 'Đạt',
+                    FAIL: 'Chưa đạt',
+                    WARNING: 'Cần lưu ý',
+                    NOT_TESTED: 'Chưa kiểm tra'
+                } as Record<string, string>)[check.result] ?? check.result}</strong><p>{check.notes}</p></div>)}</div> :
+                <p>Thiết bị này chưa có biên bản kiểm định được công bố. Bạn có thể xem mô tả người bán và đối chiếu
+                    tình trạng trước khi quyết định.</p>}</div>}{tab === 'accessories' &&
+                <div><h2>Phụ kiện đi kèm</h2><p>{item.accessories || 'Người bán chưa cung cấp thông tin phụ kiện.'}</p>
+                    <h3>Lịch sử sửa chữa</h3><p>{item.repairHistory || 'Chưa có thông tin lịch sử sửa chữa.'}</p></div>}
+            </section>
+            <TrustStrip/></>}
+    </MarketplaceLayout>;
 }
