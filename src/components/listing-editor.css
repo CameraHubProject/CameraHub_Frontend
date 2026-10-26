@@ -1,0 +1,333 @@
+.listing-editor .editor-section-title {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.listing-editor .editor-section-title .section-number {
+    margin: 2px 0 0;
+    width: 32px;
+    height: 32px;
+}
+
+.listing-editor .editor-section-title h2 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.listing-editor .editor-section-title p {
+    font-size: 13px;
+}
+
+.listing-fields {
+    min-width: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.listing-fields > .input-field, .listing-fields > .form-grid {
+    margin-bottom: 20px;
+}
+
+.listing-fields .form-label {
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.listing-fields .form-label select, .listing-fields .form-label textarea {
+    display: block;
+    margin-top: 8px;
+}
+
+.listing-fields .form-label small {
+    display: block;
+    font-size: 12px;
+    color: #656d5e;
+    margin-top: 8px;
+}
+
+.listing-fields .required-mark {
+    color: #7b3931;
+}
+
+.listing-fields:disabled {
+    opacity: .78;
+}
+
+.listing-saved-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+    background: #edf4e6;
+    border: 1px solid #cedfc0;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+}
+
+.listing-saved-notice > .material-symbols-outlined {
+    color: #426738;
+}
+
+.listing-saved-notice strong {
+    font-size: 14px;
+}
+
+.listing-saved-notice p {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #526049;
+}
+
+.photo-picker-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.photo-picker-heading > span {
+    flex-shrink: 0;
+    background: #eef2e8;
+    border-radius: 5px;
+    padding: 5px 9px;
+    font-size: 12px;
+    color: #50613f;
+}
+
+.photo-dropzone {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 20px;
+    background: #f6f8f1;
+    border: 1px dashed #a8b498;
+    border-radius: var(--radius-md);
+    text-align: center;
+    cursor: pointer;
+}
+
+.photo-dropzone:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+.photo-dropzone > span:not(.photo-dropzone-icon):not(.photo-select-label) {
+    font-size: 12px;
+    line-height: 1.7;
+    color: #5e6854;
+}
+
+.photo-dropzone-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-lg);
+    background: #e7eddd;
+    color: var(--color-accent);
+}
+
+.photo-dropzone-icon .material-symbols-outlined {
+    font-size: 28px;
+}
+
+.photo-dropzone > strong {
+    font-size: 15px;
+}
+
+.photo-select-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 18px;
+    background: white;
+    border: 1px solid #d6ddca;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+}
+
+.photo-dropzone input {
+    width: 100%;
+    max-width: 310px;
+    font-size: 12px;
+    padding: 8px;
+}
+
+.photo-dropzone.is-disabled {
+    cursor: wait;
+    opacity: .7;
+}
+
+.selected-photo-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 0;
+    margin: 20px 0 0;
+}
+
+.selected-photo {
+    min-width: 0;
+    border: 1px solid #e1e5d8;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.selected-photo-image {
+    position: relative;
+    aspect-ratio: 1;
+    background: #f1f2ec;
+}
+
+.selected-photo-image img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.photo-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: #ffffffed;
+    border: 1px solid #dfe3d8;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px #1b241515;
+}
+
+.photo-remove .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.photo-remove:disabled {
+    display: none;
+}
+
+.cover-photo-label {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    padding: 4px 8px;
+    background: #1f2c1be8;
+    color: white;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+.selected-photo-caption {
+    padding: 12px;
+}
+
+.selected-photo-caption > strong {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.photo-upload-state {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #58644d;
+    margin-top: 7px;
+}
+
+.photo-upload-state .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.photo-error {
+    border-color: #b97667;
+}
+
+.photo-error .photo-upload-state, .selected-photo-caption > p {
+    color: #8a3b2c;
+}
+
+.selected-photo-caption > p {
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.photo-uploaded .photo-upload-state {
+    color: var(--color-success);
+}
+
+.listing-upload-progress {
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: #495b3a;
+}
+
+.listing-upload-progress progress {
+    display: block;
+    width: 100%;
+    height: 8px;
+    accent-color: var(--color-accent);
+    margin-top: 10px;
+}
+
+.listing-submit-panel > .text-link {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    font-size: 12px;
+}
+
+.product-media-fallback {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.product-media-fallback > span {
+    position: absolute;
+    bottom: 6px;
+    font-size: 11px;
+    color: #6d4e43;
+    background: #fff6ec;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+    .selected-photo-grid {
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .photo-picker-heading {
+        flex-wrap: wrap;
+    }
+
+    .listing-editor .editor-section-title h2 {
+        font-size: 18px;
+    }
+
+    .listing-editor .editor-section-title p {
+        font-size: 12px;
+    }
+
+    .photo-dropzone {
+        padding: 24px 12px;
+    }
+}

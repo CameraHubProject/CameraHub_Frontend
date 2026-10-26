@@ -1,0 +1,596 @@
+.public-profile {
+    display: grid;
+    gap: 28px;
+}
+
+.public-profile-hero.surface-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.public-profile-cover {
+    min-height: 138px;
+    background: var(--color-primary);
+    color: #e3e8cf;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 40px;
+    overflow: hidden;
+}
+
+.public-profile-cover > .material-symbols-outlined {
+    font-size: 96px;
+    opacity: .22;
+    transform: rotate(-12deg);
+}
+
+.public-profile-cover > span:last-child {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-align: right;
+}
+
+.public-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0 36px 28px;
+}
+
+.public-profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    margin-top: -34px;
+    align-self: flex-start;
+    border: 6px solid white;
+    border-radius: 50%;
+    background: #edf0e2;
+    color: var(--color-primary);
+    font-size: 32px;
+    font-weight: 650;
+    position: relative;
+}
+
+.public-profile-name {
+    padding-top: 25px;
+    flex: 1;
+    min-width: 0;
+}
+
+.public-profile-name h2 {
+    font-size: 26px;
+    margin: 7px 0;
+    overflow-wrap: anywhere;
+}
+
+.public-profile-name p {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.public-profile-name p .material-symbols-outlined {
+    font-size: 18px;
+}
+
+.public-profile-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #edf2e2;
+    color: var(--color-accent);
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    margin-top: 12px;
+}
+
+.public-profile-verified .material-symbols-outlined {
+    font-size: 17px;
+}
+
+.public-profile-actions {
+    display: grid;
+    justify-items: end;
+    gap: 12px;
+    padding-top: 20px;
+}
+
+.public-profile-copy {
+    padding: 0 36px 18px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.public-profile-metrics {
+    display: grid;
+    grid-template-columns:repeat(3, 1fr);
+    border-top: 1px solid var(--color-border);
+    background: #fcfdf9;
+    padding: 24px;
+}
+
+.public-profile-metrics > div {
+    display: grid;
+    grid-template-columns:32px auto;
+    gap: 2px 9px;
+    justify-content: center;
+    padding: 0 14px;
+}
+
+.public-profile-metrics > div + div {
+    border-left: 1px solid var(--color-border);
+}
+
+.public-profile-metrics > div > .material-symbols-outlined {
+    grid-row: span 2;
+    align-self: center;
+    color: var(--color-accent);
+    font-size: 27px;
+}
+
+.public-profile-metrics strong {
+    font-size: 23px;
+}
+
+.public-profile-metrics div > span:last-child {
+    font-size: 12px;
+    color: var(--color-muted);
+}
+
+.public-profile-tabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.public-profile-tabs button {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    border-bottom: 3px solid transparent;
+    padding: 12px 4px;
+    color: var(--color-muted);
+}
+
+.public-profile-tabs button.active {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 650;
+}
+
+.public-profile-tabs button > span {
+    border-radius: 20px;
+    background: var(--color-secondary);
+    font-size: 11px;
+    padding: 3px 8px;
+}
+
+.public-profile-section-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.public-profile-section-title h2 {
+    font-size: 23px;
+    margin-bottom: 8px;
+}
+
+.public-profile-section-title p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-muted);
+}
+
+.public-profile-grid {
+    display: grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.public-listing-card.surface-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.public-listing-image {
+    display: grid;
+    place-items: center;
+    position: relative;
+    aspect-ratio: 4/3;
+    background: #f0f2e9;
+    padding: 18px;
+    overflow: hidden;
+}
+
+.public-listing-image > .actual-product-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: contain;
+}
+
+.public-listing-image .equipment-illustration {
+    width: 88%;
+    max-height: 100%;
+}
+
+.public-listing-status {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: white;
+    border-radius: 20px;
+    padding: 6px 11px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.public-listing-status.is-sold {
+    background: var(--color-primary);
+    color: white;
+}
+
+.public-listing-info {
+    padding: 22px;
+}
+
+.public-listing-info h3 {
+    font-size: 17px;
+    line-height: 1.5;
+    margin: 9px 0;
+}
+
+.public-listing-info > p {
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.public-listing-info > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.public-listing-info > div > strong {
+    font-size: 19px;
+}
+
+.public-listing-info > div > a {
+    min-width: 44px;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+}
+
+.public-review-list {
+    display: grid;
+    gap: 18px;
+    max-width: 900px;
+}
+
+.public-review header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.public-review header > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.public-review header a, .public-review header strong {
+    font-weight: 600;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.public-review time {
+    display: block;
+    font-size: 12px;
+    color: var(--color-muted);
+    margin-top: 5px;
+}
+
+.public-review-avatar {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: var(--color-secondary);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.rating-stars {
+    display: inline-flex;
+    color: #c5c7bd;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.rating-stars .filled {
+    color: #ad7a22;
+    font-variation-settings: 'FILL' 1;
+}
+
+.rating-stars .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.public-review > p {
+    margin: 18px 0;
+    font-size: 14px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.public-review-product {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8f9f4;
+    padding: 13px;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+}
+
+.public-review-product .material-symbols-outlined:last-child {
+    margin-left: auto;
+}
+
+.public-review > small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-muted);
+    font-size: 11px;
+    margin-top: 12px;
+}
+
+.public-review > small > .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--color-accent);
+}
+
+.public-profile-rating {
+    display: grid;
+    grid-template-columns:auto auto;
+    align-items: center;
+    gap: 4px 12px;
+    flex-shrink: 0;
+}
+
+.public-profile-rating > strong {
+    grid-row: span 2;
+    font-size: 38px;
+}
+
+.public-profile-rating > span:last-child {
+    font-size: 12px;
+    color: var(--color-muted);
+}
+
+.public-profile-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--color-muted);
+}
+
+.public-profile-pagination nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.public-profile-pagination .button {
+    padding: 10px;
+    min-width: 44px;
+}
+
+.seller-profile-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-block: 1px solid var(--color-border);
+    padding: 18px 0;
+    margin: 22px 0;
+}
+
+.seller-profile-link > .material-symbols-outlined:first-child {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-secondary);
+}
+
+.seller-profile-link > span:nth-child(2) {
+    flex: 1;
+    display: grid;
+    gap: 4px;
+}
+
+.seller-profile-link small {
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+.seller-profile-link strong {
+    font-size: 15px;
+}
+
+.seller-order-review > .rating-stars, .seller-order-review > p {
+    margin-block: 12px;
+}
+
+.seller-order-review textarea {
+    width: 100%;
+}
+
+.product-seller-name {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 36px;
+    font-size: 12px;
+    color: var(--color-muted);
+    margin-bottom: 8px;
+}
+
+.product-seller-name .material-symbols-outlined {
+    font-size: 17px;
+}
+
+.product-seller-name:hover {
+    color: var(--color-primary);
+}
+
+@media (max-width: 1000px) {
+    .public-profile-grid {
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+
+    .public-profile-identity {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .public-profile-actions {
+        width: 100%;
+        justify-items: start;
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .public-profile-cover {
+        min-height: 110px;
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .public-profile-cover > span:last-child {
+        font-size: 9px;
+    }
+
+    .public-profile-cover > .material-symbols-outlined {
+        font-size: 65px;
+    }
+
+    .public-profile-identity {
+        padding: 0 20px 22px;
+    }
+
+    .public-profile-avatar {
+        width: 76px;
+        height: 76px;
+        font-size: 23px;
+        border-width: 4px;
+        margin-top: -22px;
+    }
+
+    .public-profile-name {
+        padding-top: 18px;
+    }
+
+    .public-profile-name h2 {
+        font-size: 21px;
+    }
+
+    .public-profile-name .section-kicker {
+        font-size: 9px;
+    }
+
+    .public-profile-metrics {
+        padding: 18px 8px;
+    }
+
+    .public-profile-metrics > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0 8px;
+        gap: 6px;
+    }
+
+    .public-profile-metrics strong {
+        font-size: 21px;
+    }
+
+    .public-profile-metrics div > span:last-child {
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .public-profile-tabs {
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .public-profile-tabs button {
+        font-size: 13px;
+        gap: 7px;
+    }
+
+    .public-profile-section-title {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .public-profile-section-title h2 {
+        font-size: 20px;
+    }
+
+    .public-profile-grid {
+        grid-template-columns:1fr;
+        gap: 20px;
+    }
+
+    .public-review header {
+        flex-wrap: wrap;
+    }
+
+    .public-review header > .rating-stars {
+        margin-left: 56px;
+    }
+
+    .public-profile-pagination {
+        flex-direction: column;
+    }
+
+    .seller-order-review .card-title-row {
+        align-items: start;
+        flex-direction: column;
+        gap: 12px;
+    }
+}

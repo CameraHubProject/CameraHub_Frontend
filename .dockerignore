@@ -1,0 +1,15 @@
+.git
+.local
+.env
+.env.*
+node_modules
+dist
+.idea
+.tools
+.codex
+.agents
+docs
+**/*.pem
+**/*.key
+*.log
+*.tsbuildinfo

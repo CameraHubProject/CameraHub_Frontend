@@ -1,0 +1,102 @@
+import {useState} from 'react';
+import type {FormEvent} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {useQuery} from '@tanstack/react-query';
+import {fetchFeaturedProducts} from '../lib/catalog';
+import {filterCatalog, parseCatalogFilters} from '../lib/catalogFilters';
+import {openAiChat} from '../lib/ai';
+import {purposes} from '../lib/marketplace';
+import {MarketplaceLayout, TrustStrip} from './MarketplaceLayout';
+import {Button, EmptyState, Icon, ProductCard} from './ui';
+
+export function AdvisorPage() {
+    const navigate = useNavigate();
+    const [budget, setBudget] = useState('10000000-20000000');
+    const [purpose, setPurpose] = useState('TRAVEL');
+    const [experience, setExperience] = useState('beginner');
+    const [submitted, setSubmitted] = useState(false);
+    const [resultBudget, setResultBudget] = useState(budget);
+    const [resultPurpose, setResultPurpose] = useState(purpose);
+    const catalog = useQuery({queryKey: ['featured-products'], queryFn: fetchFeaturedProducts, enabled: submitted});
+    const priced = filterCatalog(catalog.data ?? [], parseCatalogFilters(new URLSearchParams({budget: resultBudget})));
+    const exact = priced.filter(item => item.presentation?.purposes?.includes(resultPurpose));
+    const matches = (exact.length ? exact : priced).slice(0, 3);
+
+    function submit(event: FormEvent) {
+        event.preventDefault();
+        setResultBudget(budget);
+        setResultPurpose(purpose);
+        setSubmitted(true);
+        openAiChat(`Tư vấn giúp tôi chọn thiết bị với ngân sách ${budget === '0-10000000' ? 'dưới 10 triệu' : budget === '10000000-20000000' ? '10 đến 20 triệu' : budget === '20000000-35000000' ? '20 đến 35 triệu' : 'trên 35 triệu'} VND, nhu cầu ${purposes.find(([key]) => key === purpose)?.[1] ?? purpose}, kinh nghiệm ${experience === 'beginner' ? 'mới bắt đầu' : experience === 'professional' ? 'chuyên nghiệp' : 'đã có kinh nghiệm'}. Hãy đối chiếu kho CameraHub và gợi ý cả ống kính nếu cần.`);
+        window.setTimeout(() => document.getElementById('advisor-results')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        }), 0);
+    }
+
+    return <MarketplaceLayout eyebrow="Cami · Bạn đồng hành chọn máy" title="Tìm chiếc máy ảnh phù hợp với bạn."
+                              description="Bắt đầu từ ngân sách, nhu cầu và kinh nghiệm. Khám phá những lựa chọn từ kho thiết bị đang bán.">
+        <section className="ai-advisor-entry">
+            <div><Icon name="auto_awesome"/><span><h2>Hỏi trực tiếp, chọn máy phù hợp hơn.</h2><p>Trò chuyện với Cami để đối chiếu kho CameraHub và thông tin kỹ thuật có nguồn trên web.</p></span>
+            </div>
+            <Button onClick={() => openAiChat()}>Trò chuyện với Cami<Icon name="chat_bubble"/></Button></section>
+        <div className="advisor-page-grid">
+            <form className="surface-card advisor-questionnaire" onSubmit={submit}><span className="eyebrow">MỖI GÓC NHÌN, MỘT LỰA CHỌN</span>
+                <h2>Cho Cami biết bạn cần gì</h2>
+                <fieldset>
+                    <legend><span className="section-number">01</span>Ngân sách của bạn</legend>
+                    <div
+                        className="budget-options">{[['0-10000000', 'Dưới 10 triệu'], ['10000000-20000000', '10 – 20 triệu'], ['20000000-35000000', '20 – 35 triệu'], ['35000000-', 'Trên 35 triệu']].map(([value, label]) =>
+                        <label key={value} className={budget === value ? 'selected' : ''}><input type="radio"
+                                                                                                 name="advisor-budget"
+                                                                                                 value={value}
+                                                                                                 checked={budget === value}
+                                                                                                 onChange={e => setBudget(e.target.value)}/>{label}
+                        </label>)}</div>
+                </fieldset>
+                <fieldset>
+                    <legend><span className="section-number">02</span>Bạn thích chụp điều gì?</legend>
+                    <div className="advisor-purposes">{purposes.map(([value, label, icon]) => <label key={value}
+                                                                                                     className={purpose === value ? 'selected' : ''}><input
+                        type="radio" name="purpose" value={value} checked={purpose === value}
+                        onChange={e => setPurpose(e.target.value)}/><Icon name={icon}/><span>{label}</span><Icon
+                        name="check_circle"/></label>)}</div>
+                </fieldset>
+                <fieldset>
+                    <legend><span className="section-number">03</span>Kinh nghiệm sử dụng máy ảnh</legend>
+                    <select aria-label="Kinh nghiệm sử dụng" value={experience}
+                            onChange={e => setExperience(e.target.value)}>
+                        <option value="beginner">Mới bắt đầu khám phá</option>
+                        <option value="enthusiast">Đã có kinh nghiệm chụp</option>
+                        <option value="professional">Sử dụng chuyên nghiệp</option>
+                    </select><p
+                    className="form-help">{experience === 'beginner' ? 'Gợi ý: ưu tiên máy dễ thao tác và tìm hiểu kỹ bộ ống kính đi kèm.' : experience === 'professional' ? 'Gợi ý: đối chiếu số lần chụp, lịch sử sửa chữa và phụ kiện với nhu cầu công việc.' : 'Gợi ý: chọn hệ ngàm và tiêu cự phù hợp với bộ thiết bị hiện có.'}</p>
+                </fieldset>
+                <Button type="submit"><Icon name="auto_awesome"/>Nhờ Cami gợi ý<Icon name="arrow_forward"/></Button><p
+                    className="form-help">Cami gợi ý từ tin đang bán và có thể đối chiếu nguồn web. Bạn vẫn có thể xem
+                    các thiết bị được lọc theo ngân sách bên dưới.</p></form>
+            <aside className="advisor-editorial"><img src="/images/hero-cameras.jpg"
+                                                      alt="Máy ảnh trong không gian studio"/>
+                <div><span className="eyebrow">MỘT CHIẾC MÁY. VÔ VÀN CÂU CHUYỆN.</span><h2>Chiếc máy tốt nhất là chiếc
+                    máy phù hợp với bạn.</h2><p>Không chỉ là thông số. Hãy bắt đầu từ những khoảnh khắc bạn muốn lưu
+                    giữ.</p></div>
+            </aside>
+        </div>
+        {submitted && <section id="advisor-results" className="advisor-results">
+            <div className="section-heading">
+                <div><span className="eyebrow">DÀNH CHO GÓC NHÌN CỦA BẠN</span><h2>Những lựa chọn đáng khám phá</h2>
+                    <p>{exact.length ? 'Thiết bị có nhu cầu sử dụng và ngân sách phù hợp.' : 'Các thiết bị trong ngân sách của bạn. Dữ liệu hiện chưa có lựa chọn được gắn đúng nhu cầu đã chọn.'}</p>
+                </div>
+                <Link className="text-link" to={`/may-anh?budget=${encodeURIComponent(resultBudget)}`}>Xem toàn bộ<Icon
+                    name="arrow_forward"/></Link></div>
+            {catalog.isPending && <p role="status">Đang tìm thiết bị phù hợp…</p>}{catalog.isError &&
+            <EmptyState icon="wifi_off" title="Chưa tải được gợi ý" description="Vui lòng thử lại."
+                        action={<Button onClick={() => void catalog.refetch()}>Thử
+                            lại</Button>}/>}{catalog.isSuccess && !matches.length &&
+            <EmptyState icon="search_off" title="Chưa có máy trong ngân sách này"
+                        description="Thử mở rộng ngân sách hoặc khám phá toàn bộ kho máy."
+                        action={<Link className="button button-primary" to="/may-anh">Khám phá kho máy</Link>}/>}
+            <div className="advisor-product-grid">{matches.map(item => <ProductCard key={item.id} product={item}
+                                                                                    onOpen={() => navigate(`/may-anh/${item.id}`)}/>)}</div>
+        </section>}<TrustStrip/></MarketplaceLayout>;
+}
