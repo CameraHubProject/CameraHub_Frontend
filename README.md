@@ -49,4 +49,7 @@ Backend kiểm thử: chạy `scripts/Test-Authentication.ps1` và `scripts/Test
 
 ## Deploy Render
 
+Frontend cũng có thể chạy trên Vercel: xem [hướng dẫn Vercel](docs/DEPLOY_VERCEL.md).
+`vercel.json` đã cấu hình API proxy tới Gateway Render và fallback cho React Router.
+
 Frontend production build bằng `deploy/render/Dockerfile`: Nginx phục vụ React và chuyển `/api/*` qua `GATEWAY_HOSTPORT` trên mạng private. Không cấu hình API key hoặc JWT private key ở frontend. Blueprint triển khai cho cả hệ thống và dự toán chi phí nằm trong repository backend: `render.yaml` và `docs/DEPLOY_RENDER.md`.
