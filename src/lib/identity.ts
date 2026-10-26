@@ -1,11 +1,12 @@
 import {readApi, readResult, checkedResponse as checked} from './apiResponse';
+export type AccountRole = 'USER' | 'ADMIN';
 export interface Account {
     id: string;
     email: string;
     fullName: string;
     phone: string | null;
     status: string;
-    roles: string[];
+    roles: AccountRole[];
 }
 
 export async function currentAccount(): Promise<Account | null> {
