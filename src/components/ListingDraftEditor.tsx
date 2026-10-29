@@ -77,10 +77,11 @@ function DraftForm({draft}: { draft: Draft }) {
         event.preventDefault();
         if (busy) return;
         const data = new FormData(event.currentTarget);
+        const sendForReview = (event.nativeEvent as SubmitEvent).submitter?.getAttribute('value') === 'submit';
         setBusy(true);
         setError('');
         try {
-            await request(`/api/marketplace/listings/${draft.id}/draft`, {
+            const saved = await requestResult(`/api/marketplace/listings/${draft.id}/draft`, {
                 ...listingDraftModel(data, draft),
                 deviceType: data.get('deviceType'),
                 title: data.get('title'),
@@ -99,9 +100,9 @@ function DraftForm({draft}: { draft: Draft }) {
                     status: 'uploaded'
                 } : item));
             }
-            const submitted = await requestResult(`/api/marketplace/listings/${draft.id}/submit`, {});
-            await client.invalidateQueries({queryKey: ['listings']});
-            navigate('/tai-khoan?tab=listings', {state: {notice: submitted.message}});
+            const result = sendForReview ? await requestResult(`/api/marketplace/listings/${draft.id}/submit`, {}) : saved;
+            await client.invalidateQueries({predicate: query => ['listings', 'featured-products', 'product', 'seller-listings', 'seller-profile'].includes(String(query.queryKey[0]))});
+            navigate('/tai-khoan?tab=listings', {state: {notice: result.message}});
         } catch (exception) {
             setError(errorMessage(exception));
         } finally {
@@ -110,8 +111,9 @@ function DraftForm({draft}: { draft: Draft }) {
         }
     }
 
-    return <form noValidate className="surface-card account-form" onSubmit={submit} aria-busy={busy}>
-        <h2>Chỉnh sửa và gửi lại tin</h2>
+    return <form className="surface-card account-form" onSubmit={submit} aria-busy={busy}>
+        <h2>Chỉnh sửa tin đăng</h2>
+        <p>Chỉnh sửa nội dung và ảnh, sau đó lưu thay đổi hoặc gửi duyệt để đăng bán. Tin đã sửa cần được duyệt lại trước khi hiển thị công khai.</p>
         {draft.moderationNote && <p className="account-notice">{draft.moderationNote}</p>}
         <fieldset disabled={busy} style={{border: 0, padding: 0, margin: 0, display: 'grid', gap: 16, minWidth: 0}}>
             <legend className="sr-only">Thông tin bản nháp</legend>
@@ -137,7 +139,10 @@ function DraftForm({draft}: { draft: Draft }) {
                 type="button" variant="secondary" onClick={() => void remove(image.id)}>Xóa ảnh</Button></div>)}</div>
             <PhotoPicker photos={photos} busy={busy} error="" onAdd={add}
                          onRemove={key => setPhotos(current => current.filter(item => item.key !== key))}/>
-            <Button loading={busy}>Lưu và gửi AI duyệt</Button>
+            <div className="listing-action-buttons">
+                <Button name="action" value="save" variant="secondary" loading={busy}>Lưu thay đổi</Button>
+                <Button name="action" value="submit" loading={busy}>Lưu và gửi duyệt</Button>
+            </div>
         </fieldset>
         {error && <p className="account-error" role="alert">{error}</p>}
     </form>;

@@ -2530,6 +2530,48 @@ h1 {
     font-weight: 600;
 }
 
+.listing-secondary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.listing-secondary-actions .button {
+    min-height: 40px;
+    padding: 8px 12px;
+}
+
+.listing-delete-button {
+    color: #a83131;
+}
+
+.listing-action-form {
+    max-width: 560px;
+}
+
+.listing-action-title {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.listing-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.listing-delete-confirm {
+    background: #a83131;
+    border-color: #a83131;
+    color: #fff;
+}
+
+.listing-delete-confirm:hover {
+    background: #892727;
+}
+
 .account-form small {
     color: #66665f;
 }

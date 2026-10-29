@@ -1,20 +1,27 @@
 import {deviceTypeLabels} from '../lib/deviceTypes';
 import {useState} from 'react';
-import {Link} from 'react-router-dom';
-import {useQuery} from '@tanstack/react-query';
+import {Link, useLocation} from 'react-router-dom';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {currentAccount} from '../lib/identity';
 import {fetchListings} from '../lib/marketplace';
 import {filterProducts, formatVnd} from '../lib/products';
 import type {Product} from '../lib/products';
 import {Button, EmptyState, Icon, Modal, ProductMedia} from './ui';
+import {ListingActionDialog} from './ListingActionDialog';
+import {canEditListing, canWithdrawListing} from '../lib/listingLifecycle';
+import type {ListingAction} from '../lib/listingLifecycle';
 
 const statusLabels: Record<string, string> = {
     PUBLISHED: 'Đang bán', AI_REVIEW: 'AI đang kiểm tra', PENDING_REVIEW: 'Chờ Admin', NEEDS_REVISION: 'Cần bổ sung',
     DRAFT: 'Bản nháp', RESERVED: 'Đã đặt mua', SOLD: 'Đã bán', REJECTED: 'Bị từ chối', HIDDEN: 'Đã ẩn',
 };
-const filters = [['ALL', 'Tất cả'], ['PUBLISHED', 'Đang bán'], ['AI_REVIEW', 'AI đang kiểm tra'], ['PENDING_REVIEW', 'Chờ Admin'], ['NEEDS_REVISION', 'Cần bổ sung'], ['RESERVED', 'Đã đặt mua'], ['SOLD', 'Đã bán']];
+const filters = [['ALL', 'Tất cả'], ['DRAFT', 'Bản nháp'], ['PUBLISHED', 'Đang bán'], ['AI_REVIEW', 'AI đang kiểm tra'], ['PENDING_REVIEW', 'Chờ Admin'], ['NEEDS_REVISION', 'Cần bổ sung'], ['REJECTED', 'Bị từ chối'], ['HIDDEN', 'Đã ẩn'], ['RESERVED', 'Đã đặt mua'], ['SOLD', 'Đã bán']];
 
 export function MyListings({compact = false}: { compact?: boolean } = {}) {
+    const client = useQueryClient();
+    const location = useLocation();
+    const [notice, setNotice] = useState<string>(location.state?.notice ?? '');
+    const [action, setAction] = useState<{listing: Product; action: ListingAction} | null>(null);
     const session = useQuery({queryKey: ['session'], queryFn: currentAccount, staleTime: 15_000});
     const listings = useQuery({
         queryKey: ['listings', session.data?.id],
@@ -59,6 +66,7 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                                                                           value={query}
                                                                           onChange={event => setQuery(event.target.value)}/></label>
         </div>}
+        {notice && <p className="account-notice" role="status">{notice}</p>}
         <div className="listing-manager-content" aria-live="polite" aria-busy={listings.isPending}>
             {listings.isPending &&
                 <div className="inventory-loading" role="status"><Icon name="progress_activity"/>Đang tải kho thiết bị…
@@ -93,17 +101,25 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                         <Link to={`/may-anh/${item.id}`}>{item.title}</Link> : item.title}</h3>
                     <p>{item.conditionNotes}</p>{item.moderationNote &&
                     <p className="inventory-review-note"><Icon name="info"/>{item.moderationNote}</p>}
+                    {item.listingStatus === 'HIDDEN' && item.withdrawalReason &&
+                        <p className="inventory-review-note"><Icon name="visibility_off"/>Lý do ẩn: {item.withdrawalReason}</p>}
                     <div className="inventory-meta"><span><Icon
                         name={item.deviceType === 'LENS' ? 'camera' : 'photo_camera'}/>{deviceTypeLabels[item.deviceType]}</span>{item.shutterCount !== null &&
                         <span><Icon name="speed"/>{item.shutterCount.toLocaleString('vi-VN')} lần chụp</span>}</div>
                 </div>
                 <div className="inventory-item-actions"><strong
                     className="inventory-price">{formatVnd(item.priceVnd)}</strong><span
-                    className="inventory-price-label">Giá đăng bán</span>{!compact && ["DRAFT", "NEEDS_REVISION", "PUBLISHED"].includes(item.listingStatus ?? "") &&
+                    className="inventory-price-label">Giá đăng bán</span>{!compact && canEditListing(item.listingStatus) &&
                     <Link className="button button-primary" to={`/dang-ban?draft=${item.id}`}><Icon name="edit"/>Chỉnh sửa</Link>}
                     <button type="button" className="button button-secondary" onClick={() => openPhotos(item)}><Icon
                         name="photo_library"/>Xem ảnh
                     </button>
+                    {!compact && canWithdrawListing(item.listingStatus) && <div className="listing-secondary-actions">
+                        {item.listingStatus !== 'HIDDEN' && <button type="button" className="button button-secondary"
+                            onClick={() => setAction({listing: item, action: 'hide'})}><Icon name="visibility_off"/>Ẩn tin</button>}
+                        <button type="button" className="button button-secondary listing-delete-button"
+                            onClick={() => setAction({listing: item, action: 'delete'})}><Icon name="delete"/>Xóa tin</button>
+                    </div>}
                 </div>
             </article>)}
         </div>
@@ -117,5 +133,12 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                 <p className="inventory-photo-help"><Icon name="lock"/>Ảnh tin chờ duyệt chỉ hiển thị với bạn và Admin.
                 </p></> : <EmptyState icon="image_not_supported" title="Tin này chưa có ảnh được lưu"
                                       description="Nếu vừa gặp lỗi tải ảnh, hãy quay lại biểu mẫu đang mở để thử lại các ảnh còn thiếu."/>}</div>}</Modal>
+        {action && <ListingActionDialog listing={action.listing} action={action.action} onClose={() => setAction(null)}
+            onSuccess={async message => {
+                setAction(null);
+                setNotice(message);
+                await client.invalidateQueries({predicate: query => ['listings', 'listing-draft', 'featured-products', 'product', 'seller-listings', 'seller-profile'].includes(String(query.queryKey[0]))});
+            }}
+        />}
     </section>;
 }

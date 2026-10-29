@@ -18,6 +18,7 @@ export interface Product {
     moderationSource?: string | null;
     moderationRevision?: number;
     moderationNote?: string | null;
+    withdrawalReason?: string | null;
     sellerId?: string;
     sellerName?: string;
     presentation?: {

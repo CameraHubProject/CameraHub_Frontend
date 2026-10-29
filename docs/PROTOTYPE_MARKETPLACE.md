@@ -1,5 +1,9 @@
 # EXE CP3 marketplace implementation
 
+Owners can edit listings (including hidden, rejected and reviewing listings), save changes without publishing, or save and submit for review. Editing a public listing removes it from sale until it is reviewed again. Hidden listings remain hidden when saved and can be resubmitted explicitly. Reserved/sold listings are locked.
+
+Hide/Delete dialogs require a reason (maximum 2000 characters) and explicit confirmation. The backend verifies ownership, locks the listing and blocks removal while an order or reservation is active. Hide removes the listing from public views; Delete additionally removes it from the owner's inventory. Deleted records and action reasons are retained for history and cannot be edited or resubmitted through listing APIs. Stale moderation decisions cannot publish a withdrawn listing. Endpoints: `POST /api/marketplace/listings/{id}/hide` and `/delete`, with `{ "reason": "..." }`.
+
 Reference: https://www.figma.com/proto/UABy3sOnkzlVcGwtQbKAJn/EXE-CP3?node-id=44-902
 
 This extends the existing React/TypeScript frontend and Spring Boot API in the local repositories. No public deployment was created. It supersedes the earlier limited visual pass described in FIGMA_IMPLEMENTATION.md.
