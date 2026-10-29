@@ -14,7 +14,7 @@ export interface CatalogFilters {
     sort: string
 }
 
-const validTypes = ['BODY', 'LENS', 'OTHER'];
+const validTypes = ['BODY', 'BODY_LENS', 'LENS', 'OTHER'];
 const inspections = ['NOT_INSPECTED', 'CERTIFIED', 'NOT_CERTIFIED', 'EXPIRED'];
 const sorts = ['newest', 'price-asc', 'price-desc', 'shutter-asc'];
 

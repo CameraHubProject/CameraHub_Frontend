@@ -1,13 +1,9 @@
-import {errorMessage} from '../lib/apiResponse';
+import {deviceTypeLabels} from '../lib/deviceTypes';
 import {useState} from 'react';
-import type {FormEvent} from 'react';
 import {Link} from 'react-router-dom';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {currentAccount} from '../lib/identity';
-import {fetchListings, request} from '../lib/marketplace';
-import type {Brand} from '../lib/marketplace';
-import {cameraBrandPayload} from '../lib/cameraBrands';
-import {CameraBrandField} from './CameraBrandField';
+import {fetchListings} from '../lib/marketplace';
 import {filterProducts, formatVnd} from '../lib/products';
 import type {Product} from '../lib/products';
 import {Button, EmptyState, Icon, Modal, ProductMedia} from './ui';
@@ -30,11 +26,6 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
     const [query, setQuery] = useState('');
     const [active, setActive] = useState<Product | null>(null);
     const [photoIndex, setPhotoIndex] = useState(0);
-    const [editing, setEditing] = useState<Product | null>(null);
-    const [saving, setSaving] = useState(false);
-    const [editError, setEditError] = useState('');
-    const [notice, setNotice] = useState('');
-    const client = useQueryClient();
     const all = listings.data ?? [];
     const matching = filterProducts(all, {query, brand: '', deviceType: '', budget: ''})
         .filter(item => status === 'ALL' || item.listingStatus === status);
@@ -43,30 +34,6 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
     function openPhotos(item: Product) {
         setActive(item);
         setPhotoIndex(0);
-    }
-
-    async function saveBrand(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        if (!editing || saving) return;
-        const data = new FormData(event.currentTarget);
-        setSaving(true);
-        setEditError('');
-        try {
-            const result = await request<{
-                listingStatus: string
-            }>(`/api/marketplace/listings/${editing.id}/brand`, cameraBrandPayload(data, client.getQueryData<Brand[]>(['brands'])?.map(brand => brand.name) ?? []));
-            await Promise.all([
-                client.invalidateQueries({queryKey: ['listings']}),
-                client.invalidateQueries({queryKey: ['featured-products']}),
-                client.invalidateQueries({queryKey: ['product', editing.id]}),
-            ]);
-            setEditing(null);
-            setNotice(result.listingStatus === 'AI_REVIEW' ? 'Đã lưu hãng máy. AI đang kiểm tra lại tin đăng.' : 'Đã lưu hãng máy.');
-        } catch (exception) {
-            setEditError(errorMessage(exception));
-        } finally {
-            setSaving(false);
-        }
     }
 
     return <section className={`listing-manager ${compact ? 'listing-manager-compact' : ''}`}
@@ -92,7 +59,6 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                                                                           value={query}
                                                                           onChange={event => setQuery(event.target.value)}/></label>
         </div>}
-        {notice && <p className="account-notice" role="status">{notice}</p>}
         <div className="listing-manager-content" aria-live="polite" aria-busy={listings.isPending}>
             {listings.isPending &&
                 <div className="inventory-loading" role="status"><Icon name="progress_activity"/>Đang tải kho thiết bị…
@@ -128,25 +94,17 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                     <p>{item.conditionNotes}</p>{item.moderationNote &&
                     <p className="inventory-review-note"><Icon name="info"/>{item.moderationNote}</p>}
                     <div className="inventory-meta"><span><Icon
-                        name={item.deviceType === 'LENS' ? 'camera' : 'photo_camera'}/>{item.deviceType === 'BODY' ? 'Thân máy ảnh' : item.deviceType === 'LENS' ? 'Ống kính' : 'Phụ kiện'}</span>{item.shutterCount !== null &&
+                        name={item.deviceType === 'LENS' ? 'camera' : 'photo_camera'}/>{deviceTypeLabels[item.deviceType]}</span>{item.shutterCount !== null &&
                         <span><Icon name="speed"/>{item.shutterCount.toLocaleString('vi-VN')} lần chụp</span>}</div>
                 </div>
                 <div className="inventory-item-actions"><strong
                     className="inventory-price">{formatVnd(item.priceVnd)}</strong><span
                     className="inventory-price-label">Giá đăng bán</span>{!compact && ["DRAFT", "NEEDS_REVISION", "PUBLISHED"].includes(item.listingStatus ?? "") &&
-                    <Link className="button button-primary" to={`/dang-ban?draft=${item.id}`}>Chỉnh sửa & gửi
-                        duyệt</Link>}
+                    <Link className="button button-primary" to={`/dang-ban?draft=${item.id}`}><Icon name="edit"/>Chỉnh sửa</Link>}
                     <button type="button" className="button button-secondary" onClick={() => openPhotos(item)}><Icon
                         name="photo_library"/>Xem ảnh
                     </button>
-                    {!compact && item.inspectionBadge === 'NOT_INSPECTED' && !['AI_REVIEW', 'PENDING_REVIEW', 'REJECTED', 'RESERVED', 'SOLD'].includes(item.listingStatus ?? '') &&
-                        <button type="button" className="button button-secondary" onClick={() => {
-                            setEditing(item);
-                            setEditError('');
-                            setNotice('');
-                        }}><Icon name="edit"/>Sửa hãng máy</button>}{item.listingStatus === 'PUBLISHED' &&
-                        <Link className="inventory-public-link" to={`/may-anh/${item.id}`}>Xem tin đăng<Icon
-                            name="north_east"/></Link>}</div>
+                </div>
             </article>)}
         </div>
         <Modal open={!!active} onClose={() => setActive(null)} title={active?.title ?? 'Ảnh thiết bị'}>{active &&
@@ -159,16 +117,5 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                 <p className="inventory-photo-help"><Icon name="lock"/>Ảnh tin chờ duyệt chỉ hiển thị với bạn và Admin.
                 </p></> : <EmptyState icon="image_not_supported" title="Tin này chưa có ảnh được lưu"
                                       description="Nếu vừa gặp lỗi tải ảnh, hãy quay lại biểu mẫu đang mở để thử lại các ảnh còn thiếu."/>}</div>}</Modal>
-        <Modal open={!!editing} onClose={() => {
-            if (!saving) setEditing(null);
-        }} title="Sửa hãng máy">{editing && <form className="account-form listing-editor" onSubmit={saveBrand}>
-            <p>{editing.title}</p><p className="form-help">Hãng máy mới sẽ được gửi duyệt lại. Ảnh và các thông tin khác
-            của thiết bị được giữ nguyên.</p>
-            <fieldset className="listing-fields" disabled={saving}>
-                <legend className="sr-only">Hãng máy của thiết bị</legend>
-                <CameraBrandField key={editing.id} initialBrand={editing.brand}/></fieldset>
-            {editError && <p className="account-error" role="alert">{editError}</p>}
-            <Button loading={saving}>Lưu hãng máy<Icon name="check"/></Button>
-        </form>}</Modal>
     </section>;
 }

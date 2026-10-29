@@ -8,7 +8,7 @@ import {SiteFooter, SiteHeader} from './SiteLayout';
 import {Button, EmptyState, Icon, ProductCard, Skeleton} from './ui';
 import {purposes} from '../lib/marketplace';
 
-const equipmentTypes = [['BODY', 'Thân máy ảnh'], ['LENS', 'Ống kính'], ['OTHER', 'Phụ kiện & thiết bị khác']];
+const equipmentTypes = [['BODY', 'Body'], ['BODY_LENS', 'Body + lens'], ['LENS', 'Lens'], ['OTHER', 'Phụ kiện']];
 const inspectionOptions = [['', 'Tất cả trạng thái'], ['NOT_INSPECTED', 'Chưa kiểm định'], ['CERTIFIED', 'Có huy hiệu kiểm định'], ['NOT_CERTIFIED', 'Chưa đạt chứng nhận'], ['EXPIRED', 'Huy hiệu đã hết hạn']];
 
 export function CatalogPage() {
