@@ -1,9 +1,11 @@
+import type {DeviceType} from './deviceTypes';
+
 export interface Product {
     id: string;
     title: string;
     brand: string;
     modelName: string;
-    deviceType: 'BODY' | 'LENS' | 'OTHER';
+    deviceType: DeviceType;
     priceVnd: string;
     shutterCount: number | null;
     conditionNotes: string;

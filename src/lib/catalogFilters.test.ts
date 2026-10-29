@@ -17,6 +17,12 @@ function product(id: string, overrides: Partial<Product> = {}): Product {
 }
 
 describe('catalog filters shared through URLs', () => {
+    it('keeps body and lens kits selectable through shared filters', () => {
+        const filters = parseCatalogFilters(new URLSearchParams('type=BODY_LENS'));
+        expect(filters.types).toEqual(['BODY_LENS']);
+        expect(filterCatalog([product('kit', {deviceType: 'BODY_LENS'}), product('body')], filters).map(item => item.id))
+            .toEqual(['kit']);
+    });
     it('preserves combined filters and multiple brands on a shared URL', () => {
         const source = new URLSearchParams('q=ống+kính&brand=Canon&brand=Sony&type=LENS&budget=0-10000000&inspection=NOT_INSPECTED&sort=price-asc');
         const filters = parseCatalogFilters(source);

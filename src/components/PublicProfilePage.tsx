@@ -1,3 +1,4 @@
+import {deviceTypeLabels} from '../lib/deviceTypes';
 import {useState} from 'react';
 import {Link, useParams, useSearchParams} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
@@ -117,7 +118,7 @@ export function PublicProfilePage() {
                         className="public-listing-image" to={`/may-anh/${product.id}`}><ProductMedia product={product}/><span
                         className={`public-listing-status ${product.listingStatus === 'SOLD' ? 'is-sold' : ''}`}>{product.listingStatus === 'SOLD' ? 'Đã bán' : 'Đang bán'}</span></Link>
                         <div className="public-listing-info"><span
-                            className="eyebrow">{product.brand} · {product.deviceType === 'LENS' ? 'Ống kính' : product.deviceType === 'BODY' ? 'Thân máy ảnh' : 'Phụ kiện'}</span>
+                            className="eyebrow">{product.brand} · {deviceTypeLabels[product.deviceType]}</span>
                             <h3><Link to={`/may-anh/${product.id}`}>{product.title}</Link></h3>
                             <p>{product.conditionNotes}</p>
                             <div><strong>{formatVnd(product.priceVnd)}</strong><Link to={`/may-anh/${product.id}`}

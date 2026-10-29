@@ -10,6 +10,8 @@ import type {ListingPhoto} from '../lib/listingPhotos';
 import {CameraBrandField} from './CameraBrandField';
 import {PhotoPicker} from './PhotoPicker';
 import {Button, Input} from './ui';
+import {deviceTypes, deviceTypeLabels} from '../lib/deviceTypes';
+import {listingDraftModel} from '../lib/listingDraftModel';
 
 interface Draft extends Product {
     modelId: string;
@@ -79,9 +81,7 @@ function DraftForm({draft}: { draft: Draft }) {
         setError('');
         try {
             await request(`/api/marketplace/listings/${draft.id}/draft`, {
-                ...(data.get('brandName') === draft.brand || (data.get('brandName') === 'Khác' && data.get('customBrandName') === draft.brand) ? {modelId: draft.modelId} : {
-                    brandName: data.get('brandName'), ...(data.get('brandName') === 'Khác' ? {customBrandName: data.get('customBrandName')} : {}),
-                }),
+                ...listingDraftModel(data, draft),
                 deviceType: data.get('deviceType'),
                 title: data.get('title'),
                 priceVnd: data.get('priceVnd'),
@@ -117,9 +117,7 @@ function DraftForm({draft}: { draft: Draft }) {
             <legend className="sr-only">Thông tin bản nháp</legend>
             <CameraBrandField initialBrand={draft.brand}/>
             <label>Loại thiết bị<select name="deviceType" defaultValue={draft.deviceType}>
-                <option value="BODY">Thân máy ảnh</option>
-                <option value="LENS">Ống kính</option>
-                <option value="OTHER">Phụ kiện</option>
+                {deviceTypes.map(type => <option key={type} value={type}>{deviceTypeLabels[type]}</option>)}
             </select></label>
             <Input label="Tiêu đề" name="title" required maxLength={240} defaultValue={draft.title}/>
             <Input label="Giá bán (₫)" name="priceVnd" type="number" required min="1" max="9999999999999"

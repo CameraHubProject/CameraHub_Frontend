@@ -1,3 +1,4 @@
+import {deviceTypeLabels} from '../lib/deviceTypes';
 import {useEffect, useId, useRef, useState} from 'react';
 import type {ButtonHTMLAttributes, InputHTMLAttributes, ReactNode} from 'react';
 import {formatVnd} from '../lib/products';
@@ -66,7 +67,7 @@ export function StatusBadge({children, verified = false}: { children: ReactNode;
 
 export function ProductCard({product, onOpen}: { product: Product; onOpen: () => void }) {
     const cart = useCart();
-    const typeLabel = product.deviceType === 'BODY' ? 'Thân máy ảnh' : product.deviceType === 'LENS' ? 'Ống kính' : 'Phụ kiện';
+    const typeLabel = deviceTypeLabels[product.deviceType];
     const inspectionLabel = product.inspectionBadge === 'CERTIFIED' ? 'Có huy hiệu kiểm định' : product.inspectionBadge === 'NOT_CERTIFIED' ? 'Chưa đạt chứng nhận' : product.inspectionBadge === 'EXPIRED' ? 'Huy hiệu đã hết hạn' : 'Chưa kiểm định';
     const original = product.presentation?.originalPriceVnd;
     const hasDiscount = !!original && /^[1-9]\d*$/.test(original) && BigInt(original) > BigInt(product.priceVnd);

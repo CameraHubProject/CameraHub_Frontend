@@ -13,6 +13,7 @@ import {Button, Icon, Input} from './ui';
 import {PhotoPicker} from './PhotoPicker';
 import {ListingDraftEditor} from './ListingDraftEditor';
 import './listing-editor.css';
+import {deviceTypes, deviceTypeLabels} from '../lib/deviceTypes';
 
 export function ListingForm() {
     const [params] = useSearchParams();
@@ -132,9 +133,7 @@ function NewListingForm() {
                     <legend className="sr-only">Thông tin thiết bị</legend>
                     <div className="form-grid"><CameraBrandField/>
                         <label className="form-label">Loại thiết bị<select name="deviceType" defaultValue="BODY">
-                            <option value="BODY">Thân máy ảnh</option>
-                            <option value="LENS">Ống kính</option>
-                            <option value="OTHER">Phụ kiện & thiết bị khác</option>
+                            {deviceTypes.map(type => <option key={type} value={type}>{deviceTypeLabels[type]}</option>)}
                         </select></label>
                     </div>
                     <Input label="Tiêu đề tin đăng *" name="title"

@@ -1,3 +1,4 @@
+import {deviceTypeLabels} from '../lib/deviceTypes';
 import type {Product} from '../lib/products';
 import {formatVnd} from '../lib/products';
 import {Icon} from './ui';
@@ -8,7 +9,7 @@ export function ProductInformation({product}: { product: Product }) {
         <dl>
             <div>
                 <dt>Loại thiết bị</dt>
-                <dd>{product.deviceType === 'BODY' ? 'Thân máy ảnh' : product.deviceType === 'LENS' ? 'Ống kính' : 'Thiết bị khác'}</dd>
+                <dd>{deviceTypeLabels[product.deviceType]}</dd>
             </div>
             <div>
                 <dt>Số lần chụp</dt>

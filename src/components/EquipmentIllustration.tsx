@@ -1,10 +1,12 @@
 import {useId} from 'react';
+import type {DeviceType} from '../lib/deviceTypes';
 
 /** Generic vector illustrations, never presented as photographs of a seller's device. */
-export function EquipmentIllustration({type}: { type: 'BODY' | 'LENS' | 'OTHER' }) {
+export function EquipmentIllustration({type}: { type: DeviceType }) {
+    const isCamera = type === 'BODY' || type === 'BODY_LENS';
     const id = useId().replace(/:/g, '');
     return <svg className="equipment-illustration" viewBox="0 0 400 260" role="img"
-                aria-label={type === 'BODY' ? 'Hình minh họa thân máy ảnh' : type === 'LENS' ? 'Hình minh họa ống kính' : 'Hình minh họa phụ kiện đèn flash'}>
+                aria-label={isCamera ? 'Hình minh họa thân máy ảnh' : type === 'LENS' ? 'Hình minh họa ống kính' : 'Hình minh họa phụ kiện đèn flash'}>
         <defs>
             <linearGradient id={`${id}body`} x1="0" y1="0" x2="1" y2="1">
                 <stop stopColor="#464744"/>
@@ -21,9 +23,9 @@ export function EquipmentIllustration({type}: { type: 'BODY' | 'LENS' | 'OTHER' 
                 <feGaussianBlur stdDeviation="8"/>
             </filter>
         </defs>
-        <ellipse cx="205" cy="225" rx={type === 'BODY' ? 123 : 85} ry="11" fill="#242821" opacity=".16"
+        <ellipse cx="205" cy="225" rx={isCamera ? 123 : 85} ry="11" fill="#242821" opacity=".16"
                  filter={`url(#${id}shadow)`}/>
-        {type === 'BODY' ? <g transform="translate(0 -4)">
+        {isCamera ? <g transform="translate(0 -4)">
             <path d="M96 88h61l17-22h57l16 22h38q21 0 21 23v90q0 19-20 19H97q-17 0-17-20v-88q0-24 16-24"
                   fill={`url(#${id}body)`} stroke="#4a4c46" strokeWidth="2"/>
             <path d="M102 94h31v111h-31q-11 0-11-12v-86q0-13 11-13" fill="#1a1b18"/>

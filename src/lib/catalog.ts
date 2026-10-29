@@ -1,3 +1,5 @@
+import {deviceTypes} from './deviceTypes';
+import type {DeviceType} from './deviceTypes';
 import {readApi, checkedResponse} from './apiResponse';
 import type {Product} from './products';
 
@@ -18,6 +20,6 @@ function isProduct(value: unknown): value is Product {
     return ['id', 'title', 'brand', 'modelName', 'conditionNotes'].every((key) => typeof item[key] === 'string')
         && typeof item.priceVnd === 'string' && /^[1-9]\d*$/.test(item.priceVnd)
         && (item.shutterCount === null || (typeof item.shutterCount === 'number' && Number.isSafeInteger(item.shutterCount) && item.shutterCount >= 0))
-        && ['BODY', 'LENS', 'OTHER'].includes(String(item.deviceType))
+        && deviceTypes.includes(item.deviceType as DeviceType)
         && ['NOT_INSPECTED', 'CERTIFIED', 'NOT_CERTIFIED', 'EXPIRED'].includes(String(item.inspectionBadge));
 }

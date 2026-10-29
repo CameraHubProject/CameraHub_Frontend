@@ -207,7 +207,8 @@ function HomePage() {
                         value={draft.deviceType}
                         onChange={(event) => setDraft({...draft, deviceType: event.target.value})}>
                         <option value="">Tất cả thiết bị</option>
-                        <option value="BODY">Thân máy ảnh</option>
+                        <option value="BODY">Body</option>
+                        <option value="BODY_LENS">Body + lens</option>
                         <option value="LENS">Ống kính</option>
                         <option value="OTHER">Thiết bị khác</option>
                     </select><Icon name="expand_more"/></label>
@@ -247,7 +248,7 @@ function HomePage() {
                             nổi bật, sẵn sàng tiếp nối</h2><p className="section-description">Khám phá những tin đăng
                             mới nhất đã được duyệt. Mỗi thiết bị là một lựa chọn riêng.</p></div>
                         <div className="filter-tabs"
-                             aria-label="Lọc loại thiết bị">{[['', 'Tất cả'], ['BODY', 'Thân máy'], ['LENS', 'Ống kính']].map(([value, label]) =>
+                             aria-label="Lọc loại thiết bị">{[['', 'Tất cả'], ['BODY', 'Body'], ['BODY_LENS', 'Body + lens'], ['LENS', 'Lens'], ['OTHER', 'Phụ kiện']].map(([value, label]) =>
                             <button key={label} className={filters.deviceType === value ? 'selected' : ''}
                                     aria-pressed={filters.deviceType === value} onClick={() => applyFilters({
                                 ...filters,
@@ -310,7 +311,8 @@ function HomePage() {
                                 <option value="35000000-">Từ 35 triệu</option>
                             </select></label><label>Bạn đang tìm<select value={advisorType}
                                                                         onChange={(event) => setAdvisorType(event.target.value)}>
-                                <option value="BODY">Một thân máy ảnh</option>
+                                <option value="BODY">Body</option>
+                                <option value="BODY_LENS">Body + lens</option>
                                 <option value="LENS">Một chiếc ống kính</option>
                                 <option value="OTHER">Thiết bị khác</option>
                                 <option value="">Tất cả thiết bị</option>

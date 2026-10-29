@@ -3,6 +3,14 @@ import {fetchFeaturedProducts} from './catalog';
 
 afterEach(() => vi.unstubAllGlobals());
 
+it('loads body and lens kits from the API', async () => {
+    const kit = {id: 'kit', title: 'Canon kèm lens', brand: 'Canon', modelName: 'Chưa xác định',
+        conditionNotes: 'Đã sử dụng', priceVnd: '6000000', shutterCount: null,
+        deviceType: 'BODY_LENS', inspectionBadge: 'NOT_INSPECTED'};
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({items: [kit]})));
+    await expect(fetchFeaturedProducts()).resolves.toEqual([kit]);
+});
+
 it('preserves an empty feed as empty', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({items: []})));
     await expect(fetchFeaturedProducts()).resolves.toEqual([]);
