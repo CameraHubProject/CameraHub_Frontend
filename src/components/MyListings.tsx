@@ -133,7 +133,7 @@ export function MyListings({compact = false}: { compact?: boolean } = {}) {
                 </div>
                 <div className="inventory-item-actions"><strong
                     className="inventory-price">{formatVnd(item.priceVnd)}</strong><span
-                    className="inventory-price-label">Giá đăng bán</span>{!compact && ["DRAFT", "NEEDS_REVISION"].includes(item.listingStatus ?? "") &&
+                    className="inventory-price-label">Giá đăng bán</span>{!compact && ["DRAFT", "NEEDS_REVISION", "PUBLISHED"].includes(item.listingStatus ?? "") &&
                     <Link className="button button-primary" to={`/dang-ban?draft=${item.id}`}>Chỉnh sửa & gửi
                         duyệt</Link>}
                     <button type="button" className="button button-secondary" onClick={() => openPhotos(item)}><Icon

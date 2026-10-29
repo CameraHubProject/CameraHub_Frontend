@@ -6,6 +6,7 @@ import {currentAccount, logout} from '../lib/identity';
 import {fetchListings, fetchOrders} from '../lib/marketplace';
 import {AddressBook} from './SellerPages';
 import {MyListings} from './MyListings';
+import {AccountSecurityEditor} from './AccountSecurityEditor';
 import {ProfileEditor} from './ProfileEditor';
 import {Icon} from './ui';
 import './profile.css';
@@ -52,7 +53,7 @@ export function ProfileContent() {
 
     return <div className="profile-workspace">
         <aside className="account-sidebar">
-            <div className="account-sidebar-identity"><span className="account-mini-avatar">{initials}</span>
+            <div className="account-sidebar-identity"><span className="account-mini-avatar">{user.avatarUrl ? <img src={user.avatarUrl} width={40} height={40} alt="Ảnh đại diện"/> : initials}</span>
                 <div><strong>{user.fullName}</strong><span>Thành viên CameraHub</span></div>
             </div>
             <p className="account-menu-caption">KHÔNG GIAN CỦA BẠN</p>
@@ -149,7 +150,7 @@ export function ProfileContent() {
                     name="manage_accounts"/></span>
                     <div><h2>Chỉnh sửa thông tin cá nhân</h2><p>Cập nhật tên và số điện thoại của bạn.</p></div>
                 </div>
-                <ProfileEditor key={user.id} user={user}/></section> : tab === 'listings' ? <MyListings/> :
+                <ProfileEditor key={user.id} user={user}/><AccountSecurityEditor user={user}/></section> : tab === 'listings' ? <MyListings/> :
                 <section className="account-addresses">
                     <div className="listing-manager-title">
                         <div><span className="section-kicker">NHẬN THIẾT BỊ THUẬN TIỆN HƠN</span><h2>Địa chỉ giao
